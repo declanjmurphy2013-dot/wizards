@@ -26,57 +26,774 @@
 </div>
 <script>
 'use strict';
-const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),keys={},realms=['Solar Keep','Bone Crypt','Cinder Spire','Night Court','Frozen Gate','Elderwood','Storm Tower','Rune Dojo','Goblin Lab','Star Temple','Iron Hall','Dragon Aerie'];
-const els={menu:$('menu'),hud:$('hud'),labels:$('labels'),fighters:$('fighters'),playBtn:$('playBtn'),controlsBtn:$('controlsBtn'),hostBtn:$('hostBtn'),joinBtn:$('joinBtn'),codeInput:$('codeInput'),statusText:$('statusText'),how:$('how'),p1bar:$('p1bar'),p2bar:$('p2bar'),p1sup:$('p1sup'),p2sup:$('p2sup'),timer:$('timer'),p1name:$('p1name'),p2name:$('p2name'),pop:$('pop'),msg:$('msg'),loading:$('loading'),seedCode:$('seedCode'),cancelHostBtn:$('cancelHostBtn'),dangerFlash:$('dangerFlash')};
-const chars=[['Aurelian','Sun Paladin','#4aa3ff','#fff08c','sun blade',112,250,'shield',1.1,1.3,0.9],['Morvane','Lord of the Undead','#67e087','#b7ffb7','skull staff',96,235,'staff',1.2,0.9,1],['Emberlyn','Flame Witch','#ff7043','#ffd15c','flame wand',92,280,'wand',1.3,0.8,1.1],['Nyx','Shadow Duelist','#8f63ff','#f3b5ff','twin daggers',88,320,'dagger',1.05,0.8,1.35],['Boreas','Frost Giant','#76d7ff','#e9fbff','ice hammer',125,210,'shield',0.95,1.4,0.7],['Thornmaw','Forest Beast','#73bf45','#ffe0a1','claws',110,275,'claw',1.2,1.1,1],['Vaelor','Storm Sage','#58d8ff','#fff36b','lightning rod',94,300,'staff',1.15,0.9,1.2],['Kairo','Rune Samurai','#ff5d7a','#f7f7ff','rune katana',104,295,'sword',1.25,1,1.15],['Poxley','Goblin Alchemist','#b4e060','#ff9f43','acid flask',90,270,'flask',1.1,0.85,1.1],['Serapha','Star Oracle','#d7a6ff','#fff0ff','star scepter',98,260,'staff',1.15,1,1],['Grum','Iron Dwarf','#a46b42','#ffcc7a','war hammer',132,205,'shield',1,1.5,0.6],['Sythra','Dragon Blood','#e84b36','#ffc163','claws and wings',108,285,'claw',1.35,1,1.2]].map((a,i)=>({id:i,name:a[0],title:a[1],color:a[2],accent:a[3],weapon:a[4],hp:a[5],speed:a[6],kind:a[7],atk:a[8],def:a[9],spd:a[10],realm:realms[i]}));
-const D={easy:{hp:.9,dmg:.7,move:.5,think:.9},normal:{hp:1,dmg:1,move:.7,think:.45},hard:{hp:1.2,dmg:1.2,move:.9,think:.25},nightmare:{hp:1.4,dmg:1.35,move:1.1,think:.12}};
-let sel=1,diff='normal',q=[],rq=[],p1,p2,raf=0,last=0,net={role:'cpu',ch:null,keys:{}},G={run:0,over:0,time:90,parts:[],shots:[],fx:[]},comboBuf=[];
-const W=()=>innerWidth,H=()=>innerHeight,F=()=>H()-105,cl=(v,a,b)=>Math.max(a,Math.min(b,v)),cx=f=>f.x+f.w/2,hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y,rr=(a,b)=>a+Math.random()*(b-a),safeRadius=r=>Math.max(0.01,r);
-function resize(){canvas.width=W();canvas.height=H()}
-function fighter(x,ch,enemy=0){let hp=Math.round(ch.hp*2.35);return{x,y:F()-120,w:58,h:120,vx:0,vy:0,dir:enemy?-1:1,hp,maxHp:hp,sup:35,ch,enemy,on:1,cd:0,blk:0,atk:null,ai:0}}
-function drawModel(g,f,x,y,s=1,flip=0){let ch=f.ch,k=ch.kind,atk=f.atk?16:0,run=Math.abs(f.vx||0)>20,bob=Math.sin(performance.now()/180+(f.x||0)*.03)*(run?4:2),arm=Math.sin(performance.now()/150+(f.x||0)*.02)*(run?7:4),leg=Math.sin(performance.now()/120+(f.x||0)*.04)*(run?8:2),jump=!f.on,air=jump?8:0,cape=['shield','staff','wand'].includes(k),skin=k==='staff'&&ch.name==='Morvane'?'#c9f7c9':k==='flask'?'#a2e36d':'#f0c087';g.save();g.translate(x,y+bob);if(flip){g.translate(58*s,0);g.scale(-s,s)}else g.scale(s,s);if(['staff','wand'].includes(k)){g.fillStyle=ch.accent;g.globalAlpha=.28;g.fillRect(0,22,58,92);g.globalAlpha=1}g.fillStyle='#0008';g.fillRect(3,116,54,8);if(cape){g.fillStyle=ch.accent;g.globalAlpha=.52;g.fillRect(9,33,40,74);g.globalAlpha=1}if(ch.name==='Sythra'){g.fillStyle=ch.accent;g.fillRect(-8,42,16,50);g.fillRect(50,42,16,50);g.fillStyle='#ff6a00';g.fillRect(9,0,10,18);g.fillRect(39,0,10,18)}if(ch.name==='Thornmaw'){g.fillStyle='#2d5f2f';g.fillRect(4,37,12,50);g.fillRect(42,37,12,50);g.fillStyle='#ffe0a1';g.fillRect(5,0,11,18);g.fillRect(42,0,11,18)}g.fillStyle='#17110d';g.fillRect(13,88+air+leg*.25,13,34-leg*.25);g.fillRect(32,88+air-leg*.25,13,34+leg*.25);g.fillStyle='#050008';g.fillRect(9+(run?leg*.18:0),114+air+leg*.25,18,8);g.fillRect(31-(run?leg*.18:0),114+air-leg*.25,18,8);let bulky=['shield','claw'].includes(k),slim=['dagger','wand','flask'].includes(k),bw=bulky?42:slim?30:36,bx=29-bw/2;g.fillStyle='#050008';g.fillRect(bx-5,27,bw+10,66);g.fillStyle=ch.color;g.fillRect(bx,36,bw,57);g.fillStyle=ch.accent;g.fillRect(bx-4,31,bw+8,12);g.fillRect(22,49,14,16);g.fillStyle='#ffffff33';g.fillRect(bx+5,40,6,45);g.fillStyle='#0005';g.fillRect(bx+bw-8,40,5,45);if(ch.name==='Aurelian'){g.fillStyle='#f5d889';g.fillRect(13,4,32,10);g.fillRect(23,-6,12,12)}else if(ch.name==='Morvane'){g.fillStyle='#111';g.fillRect(8,5,42,15);g.fillStyle='#72ff72';g.fillRect(24,-9,10,16)}else if(ch.name==='Emberlyn'){g.fillStyle='#ff3d00';g.fillRect(12,-20,34,26);g.fillRect(8,-8,8,18);g.fillRect(42,-8,8,18);g.fillStyle='#ff6a00';g.fillRect(16,-28,26,10);g.fillStyle='#ffd15c';g.fillRect(20,-34,18,8)}else if(ch.name==='Nyx'){g.fillStyle='#050008';g.fillRect(9,4,40,15);g.fillStyle=ch.accent;g.fillRect(18,2,22,4)}else if(ch.name==='Boreas'){g.fillStyle='#e9fbff';g.fillRect(7,2,44,12);g.fillStyle='#a8f0ff';g.fillRect(14,-7,9,10);g.fillRect(35,-7,9,10)}else if(ch.name==='Kairo'){g.fillStyle='#f7f7ff';g.fillRect(9,4,40,9);g.fillStyle='#111';g.fillRect(7,13,44,5)}else if(ch.name==='Grum'){g.fillStyle='#d9a05f';g.fillRect(8,8,42,10);g.fillStyle='#ffcc7a';g.fillRect(14,-2,30,12)}else if(ch.name==='Poxley'){g.fillStyle='#ff9f43';g.fillRect(10,2,38,10)}else if(ch.name==='Serapha'){g.fillStyle='#fff0ff';g.fillRect(10,3,38,9);g.fillRect(24,-9,10,15)}else{g.fillStyle=ch.accent;g.fillRect(10,4,38,9)}g.fillStyle=skin;g.fillRect(15,10,28,25);g.fillStyle='#111';g.fillRect(21,20,5,5);g.fillRect(34,20,5,5);g.fillStyle='#0004';g.fillRect(17,31,24,4);g.fillStyle=skin;g.fillRect(0,49+arm,12,35);g.fillRect(46,49-arm,12,35);g.fillStyle='#0005';g.fillRect(0,78+arm,12,6);g.fillRect(46,78-arm,12,6);if(jump){g.fillStyle='#fff';g.fillRect(10,120,38,6)}if(k==='shield'){let active=f.blk>0,xx=active?47:3,yy=active?37:52;g.fillStyle='#050008';g.fillRect(xx-3,yy-3,28,50);g.fillStyle=ch.accent;g.fillRect(xx,yy,22,44);g.fillStyle='#e8e8ff';g.fillRect(xx+5,yy+7,12,30);if(active){g.strokeStyle='#8fffff';g.lineWidth=4;g.strokeRect(xx-7,yy-7,36,58)}g.fillStyle='#f7f7ff';g.fillRect(59+atk,18,6,76);g.fillStyle=ch.accent;g.fillRect(51+atk,49,23,7)}else if(k==='sword'){g.fillStyle='#f7f7ff';g.fillRect(60+atk,15,5,80);g.fillStyle=ch.accent;g.fillRect(53+atk,50,21,6)}else if(k==='staff'||k==='wand'){g.fillStyle=ch.accent;g.fillRect(59+atk/3,20,6,72);g.fillRect(52+atk/3,11,20,18);g.fillStyle='#fff8';g.fillRect(57+atk/3,15,10,10)}else if(k==='dagger'){g.fillStyle=ch.accent;g.fillRect(55+atk,49,34,5);g.fillRect(-30-atk,49,34,5);g.fillStyle='#fff8';g.fillRect(72+atk,47,10,3);g.fillRect(-25-atk,47,10,3)}else if(k==='claw'){g.fillStyle=ch.accent;for(let i=0;i<3;i++){g.fillRect(55,51+i*8,30-i*2,5);g.fillRect(-27,51+i*8,30-i*2,5)}}else{g.fillStyle=ch.accent;g.fillRect(58+atk/2,45,17,25);g.fillStyle='#fff8';g.fillRect(62+atk/2,49,9,10)}g.restore()}
-function makeCards(){els.fighters.innerHTML='';chars.forEach((ch,i)=>{let d=document.createElement('div');d.className='fighter'+(i===sel?' sel':'');d.onclick=()=>{sel=i;makeCards()};d.innerHTML=`<div class="portrait"><canvas width="160" height="92"></canvas></div><b>${ch.name}</b><span>${ch.title}</span><div class="info"><b>${ch.name}</b><span>${ch.title}</span><span>Weapon: ${ch.weapon}</span><span>Realm: ${ch.realm}</span></div>`;els.fighters.appendChild(d);let c=d.querySelector('canvas'),g=c.getContext('2d');g.clearRect(0,0,160,92);g.save();g.translate(80,10);drawModel(g,{ch,blk:0,atk:0,x:0,y:0,on:1,vx:0},-30,0,1);g.restore()})}
-function ensureFighters(){if(!p1||!p1.ch||!Number.isFinite(p1.x)||!Number.isFinite(p1.y))p1=fighter(170,chars[sel]);if(!p2||!p2.ch||!Number.isFinite(p2.x)||!Number.isFinite(p2.y))p2=fighter(W()-240,chars[(sel+1)%chars.length],1);p1.x=cl(p1.x,30,W()-p1.w-30);p2.x=cl(p2.x,30,W()-p2.w-30);p1.y=cl(p1.y,20,F()-p1.h);p2.y=cl(p2.y,20,F()-p2.h);p1.on=p1.y+p1.h>=F()-1;p2.on=p2.y+p2.h>=F()-1}
-function bars(){ensureFighters();els.p1bar.style.width=cl(p1.hp/p1.maxHp*100,0,100)+'%';els.p2bar.style.width=cl(p2.hp/p2.maxHp*100,0,100)+'%';els.p1sup.style.width=cl(p1.sup,0,100)+'%';els.p2sup.style.width=cl(p2.sup,0,100)+'%'}
-function reset(){G={run:1,over:0,time:90,parts:[],shots:[],fx:[]};q=[];rq=[];p1=fighter(170,chars[sel]);let e=Math.floor(Math.random()*chars.length);if(e===sel)e=(e+1)%chars.length;p2=fighter(W()-240,chars[e],1);p2.hp=p2.maxHp=Math.round(p2.maxHp*D[diff].hp);els.p1name.textContent=p1.ch.name+' - '+p1.ch.title;els.p2name.textContent=p2.ch.name+' - '+p2.ch.title+' - '+diff;bars()}
-function startGame(){net.role='cpu';reset();begin()}
-function begin(){dangerMode=false;musicMode='battle';els.dangerFlash.style.borderColor='transparent';playMusic('battle');els.menu.style.display='none';els.hud.style.display=els.labels.style.display='flex';els.msg.style.display=els.pop.style.display='none';cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop)}
-function showMenu(){G.run=G.over=0;dangerMode=false;musicMode='menu';if(net.ch)net.ch.close();net={role:'cpu',ch:null,keys:{}};els.menu.style.display='flex';els.hud.style.display=els.labels.style.display=els.msg.style.display=els.pop.style.display=els.loading.style.display='none';els.dangerFlash.style.borderColor='transparent';drawBg();playMusic('menu')}
-function makeCode(){return String(Math.floor(Date.now()/1000)%1000000).padStart(6,'0')}
-function hostGame(){let c=makeCode();openRoom(c,'host');els.seedCode.textContent=c;els.menu.style.display='none';els.loading.style.display='flex';els.statusText.textContent='HOSTING '+c}
-function joinGame(){musicMode='battle';playMusic('battle');let c=els.codeInput.value.trim();if(!/^[0-9]{6}$/.test(c)){els.statusText.textContent='ENTER 6 DIGITS';return}openRoom(c,'join');reset();begin();send({type:'join'})}
-function openRoom(c,role){if(net.ch)net.ch.close();net={role,code:c,ch:new BroadcastChannel('ww-'+c),keys:{}};net.ch.onmessage=e=>onNet(e.data);els.statusText.textContent=(role==='host'?'HOST CODE: ':'JOINED CODE: ')+c}
-function send(o){if(net.ch)net.ch.postMessage(o)}
-function onNet(m){if(net.role==='host'&&m.type==='join'){els.loading.style.display='none';reset();begin()}if(net.role==='host'&&m.type==='keys'){net.keys=m.keys||{};rq.push(...(m.q||[]))}if(net.role==='join'&&m.type==='state'){Object.assign(G,m.G);p1=m.p1;p2=m.p2;bars();draw()}}
-function sendState(){if(net.role==='host')send({type:'state',G,p1,p2})}
-function grab(f){if(f.cd)return;let t=f===p1?p2:p1;if(Math.abs(cx(f)-cx(t))<88&&Math.abs(f.y-t.y)<45){t.blk=0;t.x=cl(f.x+f.dir*112,30,W()-t.w-30);t.vy=-260;damage(t,13,f.dir*560);flash('Throw!')}else flash('Missed grab');G.fx.push({x:cx(f)+f.dir*38,y:f.y+58,dir:f.dir,c:'#fff2a7',life:.35});f.cd=.65}
-function sigMove(f){if(f.cd)return;let t=f===p1?p2:p1;flash(f.ch.name+' Signature!');if(f.ch.kind==='sword'){f.atk={t:.34,a:.24,reach:112,dmg:20,hit:0,sig:1};G.fx.push({x:cx(f)+f.dir*70,y:f.y+54,dir:f.dir,c:'#ffffff',life:.45})}else if(f.ch.kind==='shield'){f.blk=.75;f.atk={t:.28,a:.18,reach:74,dmg:16,hit:0,sig:1};G.fx.push({x:cx(f)+f.dir*45,y:f.y+62,dir:f.dir,c:f.ch.accent,life:.45})}else if(['staff','wand'].includes(f.ch.kind)){for(let i=0;i<3;i++)G.shots.push({x:cx(f)+f.dir*(42+i*18),y:f.y+38+i*5,vx:f.dir*(430+i*55),vy:rr(-45,45),own:f,r:15,c:f.ch.accent,dmg:7,life:1})}else if(f.ch.kind==='dagger'){f.x=cl(t.x-f.dir*95,30,W()-f.w-30);damage(t,14,f.dir*360);G.fx.push({x:cx(t),y:t.y+55,dir:f.dir,c:f.ch.accent,life:.4})}else if(f.ch.kind==='claw'){f.atk={t:.3,a:.22,reach:82,dmg:18,hit:0,sig:1};G.fx.push({x:cx(f)+f.dir*60,y:f.y+60,dir:f.dir,c:f.ch.accent,life:.4})}else if(f.ch.kind==='flask'){for(let i=0;i<5;i++)G.shots.push({x:cx(f),y:f.y+38,vx:f.dir*rr(250,520),vy:rr(-220,90),own:f,r:11,c:'#9cff5c',dmg:5,life:1.1})}f.cd=.72}
-function checkCombo(f,k){comboBuf.push({k,t:performance.now()});comboBuf=comboBuf.filter(c=>performance.now()-c.t<600);let s=comboBuf.map(c=>c.k).join('');if(s.includes('vxc')){f.atk={t:.4,a:.3,reach:130,dmg:26,hit:0};flash('!');comboBuf=[]}if(s.includes('cvc')){for(let i=0;i<6;i++)G.shots.push({x:cx(f),y:f.y+40,vx:f.dir*rr(200,600),vy:rr(-200,200),own:f,r:12,c:f.ch.accent,dmg:6,life:1});comboBuf=[]}if(s.includes('xxv')){damage(f===p1?p2:p1,22,f.dir*700);comboBuf=[]}}
-function control(f,ks,queue){f.vx=0;if(ks.arrowleft){f.vx=-f.ch.speed*f.ch.spd;f.dir=-1}if(ks.arrowright){f.vx=f.ch.speed*f.ch.spd;f.dir=1}if(ks.arrowup&&f.on){f.vy=-720;f.on=0;playJump()}for(let k of queue.splice(0,10)){checkCombo(f,k);if(k==='z'){f.blk=.55;f.cd=.25}if(k==='v')attack(f,'light');if(k==='x')attack(f,'heavy');if(k==='c')sigMove(f);if(k==='shift')grab(f);if(k===' ')superMove(f)}}
-function attack(f,t){if(f.cd)return;if(t==='shot'){G.shots.push({x:cx(f)+f.dir*44,y:f.y+48,vx:f.dir*560,own:f,r:13,c:f.ch.accent,dmg:10,life:1.4});f.cd=.55}else{f.atk={t:.18,a:.12,reach:t==='heavy'?66:44,dmg:t==='heavy'?14:8,hit:0};f.cd=t==='heavy'?.52:.3}G.fx.push({x:cx(f)+f.dir*46,y:f.y+60,dir:f.dir,c:f.ch.accent,life:.32})}
-function superMove(f){if(f.sup<100||f.cd)return;let t=f===p1?p2:p1;f.sup=0;flash(f.ch.name+': SUPER!');if(f.ch.kind==='staff'){for(let i=0;i<10;i++)G.shots.push({x:cx(f)+f.dir*(30+i*12),y:f.y+20+i*6,vx:f.dir*(360+i*20),vy:rr(-120,120),own:f,r:14,c:f.ch.accent,dmg:6,life:1.1});damage(t,20,f.dir*420)}else if(f.ch.kind==='wand'){for(let i=0;i<6;i++)G.shots.push({x:cx(f)+f.dir*(40+i*20),y:f.y+40,vx:f.dir*(520+i*40),own:f,r:18,c:'#ff6a00',dmg:8,life:.8});G.fx.push({x:cx(f),y:f.y+40,dir:f.dir,c:'#ff3d00',life:.6})}else if(f.ch.kind==='sword'){damage(t,40,f.dir*800);G.fx.push({x:cx(f)+f.dir*50,y:f.y+50,dir:f.dir,c:'#ffffff',life:.5})}else if(f.ch.kind==='shield'){f.blk=1.2;damage(t,26,f.dir*600)}else if(f.ch.kind==='dagger'){for(let i=0;i<4;i++)setTimeout(()=>{if(G.run&&t.hp>0)damage(t,10,f.dir*200)},i*120)}else if(f.ch.kind==='claw'){damage(t,32,f.dir*700);for(let i=0;i<8;i++)G.parts.push({x:cx(t),y:t.y+50,vx:rr(-300,300),vy:rr(-200,50),life:.5,c:f.ch.accent})}else if(f.ch.kind==='flask'){for(let i=0;i<12;i++)G.shots.push({x:cx(f),y:f.y+30,vx:rr(-300,300),vy:rr(-200,200),own:f,r:10,c:'#9cff5c',dmg:5,life:1})}f.cd=1.2}
+// ============================================================================
+// WIZARDS & WARRIORS - A 2D Fighting Game
+// ============================================================================
+
+// Shortcut for getElementById - reduces typing
+const $ = id => document.getElementById(id),
+    canvas = $('game'),
+    ctx = canvas.getContext('2d'),
+    keys = {},
+
+// Realm names for character backgrounds (12 total, one per character)
+    realms = [
+        'Solar Keep', 'Bone Crypt', 'Cinder Spire', 'Night Court',
+        'Frozen Gate', 'Elderwood', 'Storm Tower', 'Rune Dojo',
+        'Goblin Lab', 'Star Temple', 'Iron Hall', 'Dragon Aerie'
+    ];
+
+// DOM element references for UI manipulation
+const els = {
+    menu: $('menu'),
+    hud: $('hud'),
+    labels: $('labels'),
+    fighters: $('fighters'),
+    playBtn: $('playBtn'),
+    controlsBtn: $('controlsBtn'),
+    hostBtn: $('hostBtn'),
+    joinBtn: $('joinBtn'),
+    codeInput: $('codeInput'),
+    statusText: $('statusText'),
+    how: $('how'),
+    p1bar: $('p1bar'),
+    p2bar: $('p2bar'),
+    p1sup: $('p1sup'),
+    p2sup: $('p2sup'),
+    timer: $('timer'),
+    p1name: $('p1name'),
+    p2name: $('p2name'),
+    pop: $('pop'),
+    msg: $('msg'),
+    loading: $('loading'),
+    seedCode: $('seedCode'),
+    cancelHostBtn: $('cancelHostBtn'),
+    dangerFlash: $('dangerFlash')
+};
+// Character data array: [name, title, bodyColor, accentColor, weapon, baseHP, speed, weaponType, atkMod, defMod, spdMod]
+// Each character has unique stats that affect gameplay
+const chars = [
+    ['Aurelian', 'Sun Paladin', '#4aa3ff', '#fff08c', 'sun blade', 112, 250, 'shield', 1.1, 1.3, 0.9],
+    ['Morvane', 'Lord of the Undead', '#67e087', '#b7ffb7', 'skull staff', 96, 235, 'staff', 1.2, 0.9, 1],
+    ['Emberlyn', 'Flame Witch', '#ff7043', '#ffd15c', 'flame wand', 92, 280, 'wand', 1.3, 0.8, 1.1],
+    ['Nyx', 'Shadow Duelist', '#8f63ff', '#f3b5ff', 'twin daggers', 88, 320, 'dagger', 1.05, 0.8, 1.35],
+    ['Boreas', 'Frost Giant', '#76d7ff', '#e9fbff', 'ice hammer', 125, 210, 'shield', 0.95, 1.4, 0.7],
+    ['Thornmaw', 'Forest Beast', '#73bf45', '#ffe0a1', 'claws', 110, 275, 'claw', 1.2, 1.1, 1],
+    ['Vaelor', 'Storm Sage', '#58d8ff', '#fff36b', 'lightning rod', 94, 300, 'staff', 1.15, 0.9, 1.2],
+    ['Kairo', 'Rune Samurai', '#ff5d7a', '#f7f7ff', 'rune katana', 104, 295, 'sword', 1.25, 1, 1.15],
+    ['Poxley', 'Goblin Alchemist', '#b4e060', '#ff9f43', 'acid flask', 90, 270, 'flask', 1.1, 0.85, 1.1],
+    ['Serapha', 'Star Oracle', '#d7a6ff', '#fff0ff', 'star scepter', 98, 260, 'staff', 1.15, 1, 1],
+    ['Grum', 'Iron Dwarf', '#a46b42', '#ffcc7a', 'war hammer', 132, 205, 'shield', 1, 1.5, 0.6],
+    ['Sythra', 'Dragon Blood', '#e84b36', '#ffc163', 'claws and wings', 108, 285, 'claw', 1.35, 1, 1.2]
+].map((a, i) => ({
+    id: i,
+    name: a[0],
+    title: a[1],
+    color: a[2],
+    accent: a[3],
+    weapon: a[4],
+    hp: a[5],
+    speed: a[6],
+    kind: a[7],
+    atk: a[8],
+    def: a[9],
+    spd: a[10],
+    realm: realms[i]
+}));
+
+// CPU difficulty modifiers: hp (health multiplier), dmg (damage multiplier), move (speed multiplier), think (action delay in seconds)
+const D = {
+    easy: { hp: .9, dmg: .7, move: .5, think: .9 },
+    normal: { hp: 1, dmg: 1, move: .7, think: .45 },
+    hard: { hp: 1.2, dmg: 1.2, move: .9, think: .25 },
+    nightmare: { hp: 1.4, dmg: 1.35, move: 1.1, think: .12 }
+};
+
+// Global state variables
+let sel = 1,
+    diff = 'normal',
+    q = [],
+    rq = [],
+    p1, p2,
+    raf = 0,
+    last = 0,
+    net = { role: 'cpu', ch: null, keys: {} },
+    G = { run: 0, over: 0, time: 90, parts: [], shots: [], fx: [] },
+    comboBuf = [];
+
+// Utility functions: W (width), H (height), F (floor Y), cl (clamp), cx (center X), hit (collision), rr (random range), safeRadius (positive radius)
+const W = () => innerWidth,
+    H = () => innerHeight,
+    F = () => H() - 105,
+    cl = (v, a, b) => Math.max(a, Math.min(b, v)),
+    cx = f => f.x + f.w / 2,
+    hit = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y,
+    rr = (a, b) => a + Math.random() * (b - a),
+    safeRadius = r => Math.max(0.01, r);
+// ============================================================================
+// GAME FUNCTIONS
+// ============================================================================
+
+// Resize canvas to fill window
+function resize() {
+    canvas.width = W();
+    canvas.height = H();
+}
+
+// Create a new fighter object with stats based on character
+function fighter(x, ch, enemy = 0) {
+    let hp = Math.round(ch.hp * 2.35);
+    return {
+        x, y: F() - 120,
+        w: 58, h: 120,
+        vx: 0, vy: 0,
+        dir: enemy ? -1 : 1,
+        hp, maxHp: hp,
+        sup: 35,
+        ch, enemy,
+        on: 1, cd: 0, blk: 0,
+        atk: null, ai: 0
+    };
+}
+// Draw a fighter model on canvas
+function drawModel(g, f, x, y, s = 1, flip = 0) {
+    let ch = f.ch,
+        k = ch.kind,
+        atk = f.atk ? 16 : 0,
+        run = Math.abs(f.vx || 0) > 20,
+        bob = Math.sin(performance.now() / 180 + (f.x || 0) * .03) * (run ? 4 : 2),
+        arm = Math.sin(performance.now() / 150 + (f.x || 0) * .02) * (run ? 7 : 4),
+        leg = Math.sin(performance.now() / 120 + (f.x || 0) * .04) * (run ? 8 : 2),
+        jump = !f.on,
+        air = jump ? 8 : 0,
+        cape = ['shield', 'staff', 'wand'].includes(k),
+        skin = k === 'staff' && ch.name === 'Morvane' ? '#c9f7c9' :
+            k === 'flask' ? '#a2e36d' : '#f0c087';
+
+    g.save();
+    g.translate(x, y + bob);
+    if (flip) {
+        g.translate(58 * s, 0);
+        g.scale(-s, s);
+    } else {
+        g.scale(s, s);
+    }
+
+    // Aura for staff/wand users
+    if (['staff', 'wand'].includes(k)) {
+        g.fillStyle = ch.accent;
+        g.globalAlpha = .28;
+        g.fillRect(0, 22, 58, 92);
+        g.globalAlpha = 1;
+    }
+
+    // Shadow
+    g.fillStyle = '#0008';
+    g.fillRect(3, 116, 54, 8);
+
+    // Cape
+    if (cape) {
+        g.fillStyle = ch.accent;
+        g.globalAlpha = .52;
+        g.fillRect(9, 33, 40, 74);
+        g.globalAlpha = 1;
+    }
+
+    // Character-specific wings/horns
+    if (ch.name === 'Sythra') {
+        g.fillStyle = ch.accent;
+        g.fillRect(-8, 42, 16, 50);
+        g.fillRect(50, 42, 16, 50);
+        g.fillStyle = '#ff6a00';
+        g.fillRect(9, 0, 10, 18);
+        g.fillRect(39, 0, 10, 18);
+    }
+    if (ch.name === 'Thornmaw') {
+        g.fillStyle = '#2d5f2f';
+        g.fillRect(4, 37, 12, 50);
+        g.fillRect(42, 37, 12, 50);
+        g.fillStyle = '#ffe0a1';
+        g.fillRect(5, 0, 11, 18);
+        g.fillRect(42, 0, 11, 18);
+    }
+
+    // Legs
+    g.fillStyle = '#17110d';
+    g.fillRect(13, 88 + air + leg * .25, 13, 34 - leg * .25);
+    g.fillRect(32, 88 + air - leg * .25, 13, 34 + leg * .25);
+    g.fillStyle = '#050008';
+    g.fillRect(9 + (run ? leg * .18 : 0), 114 + air + leg * .25, 18, 8);
+    g.fillRect(31 - (run ? leg * .18 : 0), 114 + air - leg * .25, 18, 8);
+
+    // Body
+    let bulky = ['shield', 'claw'].includes(k),
+        slim = ['dagger', 'wand', 'flask'].includes(k),
+        bw = bulky ? 42 : slim ? 30 : 36,
+        bx = 29 - bw / 2;
+
+    g.fillStyle = '#050008';
+    g.fillRect(bx - 5, 27, bw + 10, 66);
+    g.fillStyle = ch.color;
+    g.fillRect(bx, 36, bw, 57);
+    g.fillStyle = ch.accent;
+    g.fillRect(bx - 4, 31, bw + 8, 12);
+    g.fillRect(22, 49, 14, 16);
+    g.fillStyle = '#ffffff33';
+    g.fillRect(bx + 5, 40, 6, 45);
+    g.fillStyle = '#0005';
+    g.fillRect(bx + bw - 8, 40, 5, 45);
+
+    // Character-specific head details
+    if (ch.name === 'Aurelian') {
+        g.fillStyle = '#f5d889';
+        g.fillRect(13, 4, 32, 10);
+        g.fillRect(23, -6, 12, 12);
+    } else if (ch.name === 'Morvane') {
+        g.fillStyle = '#111';
+        g.fillRect(8, 5, 42, 15);
+        g.fillStyle = '#72ff72';
+        g.fillRect(24, -9, 10, 16);
+    } else if (ch.name === 'Emberlyn') {
+        g.fillStyle = '#ff3d00';
+        g.fillRect(12, -20, 34, 26);
+        g.fillRect(8, -8, 8, 18);
+        g.fillRect(42, -8, 8, 18);
+        g.fillStyle = '#ff6a00';
+        g.fillRect(16, -28, 26, 10);
+        g.fillStyle = '#ffd15c';
+        g.fillRect(20, -34, 18, 8);
+    } else if (ch.name === 'Nyx') {
+        g.fillStyle = '#050008';
+        g.fillRect(9, 4, 40, 15);
+        g.fillStyle = ch.accent;
+        g.fillRect(18, 2, 22, 4);
+    } else if (ch.name === 'Boreas') {
+        g.fillStyle = '#e9fbff';
+        g.fillRect(7, 2, 44, 12);
+        g.fillStyle = '#a8f0ff';
+        g.fillRect(14, -7, 9, 10);
+        g.fillRect(35, -7, 9, 10);
+    } else if (ch.name === 'Kairo') {
+        g.fillStyle = '#f7f7ff';
+        g.fillRect(9, 4, 40, 9);
+        g.fillStyle = '#111';
+        g.fillRect(7, 13, 44, 5);
+    } else if (ch.name === 'Grum') {
+        g.fillStyle = '#d9a05f';
+        g.fillRect(8, 8, 42, 10);
+        g.fillStyle = '#ffcc7a';
+        g.fillRect(14, -2, 30, 12);
+    } else if (ch.name === 'Poxley') {
+        g.fillStyle = '#ff9f43';
+        g.fillRect(10, 2, 38, 10);
+    } else if (ch.name === 'Serapha') {
+        g.fillStyle = '#fff0ff';
+        g.fillRect(10, 3, 38, 9);
+        g.fillRect(24, -9, 10, 15);
+    } else {
+        g.fillStyle = ch.accent;
+        g.fillRect(10, 4, 38, 9);
+    }
+
+    // Head
+    g.fillStyle = skin;
+    g.fillRect(15, 10, 28, 25);
+    g.fillStyle = '#111';
+    g.fillRect(21, 20, 5, 5);
+    g.fillRect(34, 20, 5, 5);
+    g.fillStyle = '#0004';
+    g.fillRect(17, 31, 24, 4);
+
+    // Arms
+    g.fillStyle = skin;
+    g.fillRect(0, 49 + arm, 12, 35);
+    g.fillRect(46, 49 - arm, 12, 35);
+    g.fillStyle = '#0005';
+    g.fillRect(0, 78 + arm, 12, 6);
+    g.fillRect(46, 78 - arm, 12, 6);
+
+    // Jump effect
+    if (jump) {
+        g.fillStyle = '#fff';
+        g.fillRect(10, 120, 38, 6);
+    }
+
+    // Weapons
+    if (k === 'shield') {
+        let active = f.blk > 0,
+            xx = active ? 47 : 3,
+            yy = active ? 37 : 52;
+        g.fillStyle = '#050008';
+        g.fillRect(xx - 3, yy - 3, 28, 50);
+        g.fillStyle = ch.accent;
+        g.fillRect(xx, yy, 22, 44);
+        g.fillStyle = '#e8e8ff';
+        g.fillRect(xx + 5, yy + 7, 12, 30);
+        if (active) {
+            g.strokeStyle = '#8fffff';
+            g.lineWidth = 4;
+            g.strokeRect(xx - 7, yy - 7, 36, 58);
+        }
+        g.fillStyle = '#f7f7ff';
+        g.fillRect(59 + atk, 18, 6, 76);
+        g.fillStyle = ch.accent;
+        g.fillRect(51 + atk, 49, 23, 7);
+    } else if (k === 'sword') {
+        g.fillStyle = '#f7f7ff';
+        g.fillRect(60 + atk, 15, 5, 80);
+        g.fillStyle = ch.accent;
+        g.fillRect(53 + atk, 50, 21, 6);
+    } else if (k === 'staff' || k === 'wand') {
+        g.fillStyle = ch.accent;
+        g.fillRect(59 + atk / 3, 20, 6, 72);
+        g.fillRect(52 + atk / 3, 11, 20, 18);
+        g.fillStyle = '#fff8';
+        g.fillRect(57 + atk / 3, 15, 10, 10);
+    } else if (k === 'dagger') {
+        g.fillStyle = ch.accent;
+        g.fillRect(55 + atk, 49, 34, 5);
+        g.fillRect(-30 - atk, 49, 34, 5);
+        g.fillStyle = '#fff8';
+        g.fillRect(72 + atk, 47, 10, 3);
+        g.fillRect(-25 - atk, 47, 10, 3);
+    } else if (k === 'claw') {
+        g.fillStyle = ch.accent;
+        for (let i = 0; i < 3; i++) {
+            g.fillRect(55, 51 + i * 8, 30 - i * 2, 5);
+            g.fillRect(-27, 51 + i * 8, 30 - i * 2, 5);
+        }
+    } else {
+        g.fillStyle = ch.accent;
+        g.fillRect(58 + atk / 2, 45, 17, 25);
+        g.fillStyle = '#fff8';
+        g.fillRect(62 + atk / 2, 49, 9, 10);
+    }
+
+    g.restore();
+}
+// Generate character selection cards in the menu
+function makeCards() {
+    els.fighters.innerHTML = '';
+    chars.forEach((ch, i) => {
+        let d = document.createElement('div');
+        d.className = 'fighter' + (i === sel ? ' sel' : '');
+        d.onclick = () => { sel = i; makeCards(); };
+        d.innerHTML = `
+            <div class="portrait"><canvas width="160" height="92"></canvas></div>
+            <b>${ch.name}</b>
+            <span>${ch.title}</span>
+            <div class="info">
+                <b>${ch.name}</b>
+                <span>${ch.title}</span>
+                <span>Weapon: ${ch.weapon}</span>
+                <span>Realm: ${ch.realm}</span>
+            </div>`;
+        els.fighters.appendChild(d);
+
+        let c = d.querySelector('canvas'),
+            g = c.getContext('2d');
+        g.clearRect(0, 0, 160, 92);
+        g.save();
+        g.translate(80, 10);
+        drawModel(g, { ch, blk: 0, atk: 0, x: 0, y: 0, on: 1, vx: 0 }, -30, 0, 1);
+        g.restore();
+    });
+}
+
+// Ensure fighters exist and are within bounds
+function ensureFighters() {
+    if (!p1 || !p1.ch || !Number.isFinite(p1.x) || !Number.isFinite(p1.y))
+        p1 = fighter(170, chars[sel]);
+    if (!p2 || !p2.ch || !Number.isFinite(p2.x) || !Number.isFinite(p2.y))
+        p2 = fighter(W() - 240, chars[(sel + 1) % chars.length], 1);
+
+    p1.x = cl(p1.x, 30, W() - p1.w - 30);
+    p2.x = cl(p2.x, 30, W() - p2.w - 30);
+    p1.y = cl(p1.y, 20, F() - p1.h);
+    p2.y = cl(p2.y, 20, F() - p1.h);
+
+    p1.on = p1.y + p1.h >= F() - 1;
+    p2.on = p2.y + p2.h >= F() - 1;
+}
+
+// Update health bars and super meters in HUD
+function bars() {
+    ensureFighters();
+    els.p1bar.style.width = cl(p1.hp / p1.maxHp * 100, 0, 100) + '%';
+    els.p2bar.style.width = cl(p2.hp / p2.maxHp * 100, 0, 100) + '%';
+    els.p1sup.style.width = cl(p1.sup, 0, 100) + '%';
+    els.p2sup.style.width = cl(p2.sup, 0, 100) + '%';
+}
+
+// Reset game state for a new match
+function reset() {
+    G = { run: 1, over: 0, time: 90, parts: [], shots: [], fx: [] };
+    q = [];
+    rq = [];
+    p1 = fighter(170, chars[sel]);
+
+    let e = Math.floor(Math.random() * chars.length);
+    if (e === sel) e = (e + 1) % chars.length;
+
+    p2 = fighter(W() - 240, chars[e], 1);
+    p2.hp = p2.maxHp = Math.round(p2.maxHp * D[diff].hp);
+
+    els.p1name.textContent = p1.ch.name + ' - ' + p1.ch.title;
+    els.p2name.textContent = p2.ch.name + ' - ' + p2.ch.title + ' - ' + diff;
+    bars();
+}
+
+// Start a CPU game
+function startGame() {
+    net.role = 'cpu';
+    reset();
+    begin();
+}
+
+// Transition to battle mode
+function begin() {
+    dangerMode = false;
+    musicMode = 'battle';
+    els.dangerFlash.style.borderColor = 'transparent';
+    playMusic('battle');
+    els.menu.style.display = 'none';
+    els.hud.style.display = els.labels.style.display = 'flex';
+    els.msg.style.display = els.pop.style.display = 'none';
+    cancelAnimationFrame(raf);
+    last = performance.now();
+    raf = requestAnimationFrame(loop);
+}
+
+// Return to main menu
+function showMenu() {
+    G.run = G.over = 0;
+    dangerMode = false;
+    musicMode = 'menu';
+    if (net.ch) net.ch.close();
+    net = { role: 'cpu', ch: null, keys: {} };
+    els.menu.style.display = 'flex';
+    els.hud.style.display = els.labels.style.display = els.msg.style.display = els.pop.style.display = els.loading.style.display = 'none';
+    els.dangerFlash.style.borderColor = 'transparent';
+    drawBg();
+    playMusic('menu');
+}
+
+// Generate 6-digit room code from current timestamp
+function makeCode() {
+    return String(Math.floor(Date.now() / 1000) % 1000000).padStart(6, '0');
+}
+
+// Host a multiplayer game
+function hostGame() {
+    let c = makeCode();
+    openRoom(c, 'host');
+    els.seedCode.textContent = c;
+    els.menu.style.display = 'none';
+    els.loading.style.display = 'flex';
+    els.statusText.textContent = 'HOSTING ' + c;
+}
+
+// Join a multiplayer game
+function joinGame() {
+    musicMode = 'battle';
+    playMusic('battle');
+    let c = els.codeInput.value.trim();
+    if (!/^[0-9]{6}$/.test(c)) {
+        els.statusText.textContent = 'ENTER 6 DIGITS';
+        return;
+    }
+    openRoom(c, 'join');
+    reset();
+    begin();
+    send({ type: 'join' });
+}
+
+// Open a BroadcastChannel room for local network play
+function openRoom(c, role) {
+    if (net.ch) net.ch.close();
+    net = {
+        role,
+        code: c,
+        ch: new BroadcastChannel('ww-' + c),
+        keys: {}
+    };
+    net.ch.onmessage = e => onNet(e.data);
+    els.statusText.textContent = (role === 'host' ? 'HOST CODE: ' : 'JOINED CODE: ') + c;
+}
+
+// Send message over network
+function send(o) {
+    if (net.ch) net.ch.postMessage(o);
+}
+
+// Handle incoming network messages
+function onNet(m) {
+    if (net.role === 'host' && m.type === 'join') {
+        els.loading.style.display = 'none';
+        reset();
+        begin();
+    }
+    if (net.role === 'host' && m.type === 'keys') {
+        net.keys = m.keys || {};
+        rq.push(...(m.q || []));
+    }
+    if (net.role === 'join' && m.type === 'state') {
+        Object.assign(G, m.G);
+        p1 = m.p1;
+        p2 = m.p2;
+        bars();
+        draw();
+    }
+}
+
+// Send game state to connected player (host only)
+function sendState() {
+    if (net.role === 'host') send({ type: 'state', G, p1, p2 });
+}
+// Grab and throw opponent (Shift key)
+function grab(f) {
+    if (f.cd) return;
+    let t = f === p1 ? p2 : p1;
+    if (Math.abs(cx(f) - cx(t)) < 88 && Math.abs(f.y - t.y) < 45) {
+        t.blk = 0;
+        t.x = cl(f.x + f.dir * 112, 30, W() - t.w - 30);
+        t.vy = -260;
+        damage(t, 13, f.dir * 560);
+        flash('Throw!');
+    } else {
+        flash('Missed grab');
+    }
+    G.fx.push({ x: cx(f) + f.dir * 38, y: f.y + 58, dir: f.dir, c: '#fff2a7', life: .35 });
+    f.cd = .65;
+}
+
+// Signature move - unique to each weapon type (C key)
+function sigMove(f) {
+    if (f.cd) return;
+    let t = f === p1 ? p2 : p1;
+    flash(f.ch.name + ' Signature!');
+
+    if (f.ch.kind === 'sword') {
+        f.atk = { t: .34, a: .24, reach: 112, dmg: 20, hit: 0, sig: 1 };
+        G.fx.push({ x: cx(f) + f.dir * 70, y: f.y + 54, dir: f.dir, c: '#ffffff', life: .45 });
+    } else if (f.ch.kind === 'shield') {
+        f.blk = .75;
+        f.atk = { t: .28, a: .18, reach: 74, dmg: 16, hit: 0, sig: 1 };
+        G.fx.push({ x: cx(f) + f.dir * 45, y: f.y + 62, dir: f.dir, c: f.ch.accent, life: .45 });
+    } else if (['staff', 'wand'].includes(f.ch.kind)) {
+        for (let i = 0; i < 3; i++)
+            G.shots.push({
+                x: cx(f) + f.dir * (42 + i * 18),
+                y: f.y + 38 + i * 5,
+                vx: f.dir * (430 + i * 55),
+                vy: rr(-45, 45),
+                own: f,
+                r: 15,
+                c: f.ch.accent,
+                dmg: 7,
+                life: 1
+            });
+    } else if (f.ch.kind === 'dagger') {
+        f.x = cl(t.x - f.dir * 95, 30, W() - f.w - 30);
+        damage(t, 14, f.dir * 360);
+        G.fx.push({ x: cx(t), y: t.y + 55, dir: f.dir, c: f.ch.accent, life: .4 });
+    } else if (f.ch.kind === 'claw') {
+        f.atk = { t: .3, a: .22, reach: 82, dmg: 18, hit: 0, sig: 1 };
+        G.fx.push({ x: cx(f) + f.dir * 60, y: f.y + 60, dir: f.dir, c: f.ch.accent, life: .4 });
+    } else if (f.ch.kind === 'flask') {
+        for (let i = 0; i < 5; i++)
+            G.shots.push({
+                x: cx(f), y: f.y + 38,
+                vx: f.dir * rr(250, 520),
+                vy: rr(-220, 90),
+                own: f,
+                r: 11,
+                c: '#9cff5c',
+                dmg: 5,
+                life: 1.1
+            });
+    }
+    f.cd = .72;
+}
+
+// Check for special input combos (VXC, CVC, XXV)
+function checkCombo(f, k) {
+    comboBuf.push({ k, t: performance.now() });
+    comboBuf = comboBuf.filter(c => performance.now() - c.t < 600);
+    let s = comboBuf.map(c => c.k).join('');
+
+    if (s.includes('vxc')) {
+        f.atk = { t: .4, a: .3, reach: 130, dmg: 26, hit: 0 };
+        flash('!');
+        comboBuf = [];
+    }
+    if (s.includes('cvc')) {
+        for (let i = 0; i < 6; i++)
+            G.shots.push({
+                x: cx(f), y: f.y + 40,
+                vx: f.dir * rr(200, 600),
+                vy: rr(-200, 200),
+                own: f,
+                r: 12,
+                c: f.ch.accent,
+                dmg: 6,
+                life: 1
+            });
+        comboBuf = [];
+    }
+    if (s.includes('xxv')) {
+        damage(f === p1 ? p2 : p1, 22, f.dir * 700);
+        comboBuf = [];
+    }
+}
+
+// Process player input - movement, attacks, combos
+function control(f, ks, queue) {
+    f.vx = 0;
+    if (ks.arrowleft) {
+        f.vx = -f.ch.speed * f.ch.spd;
+        f.dir = -1;
+    }
+    if (ks.arrowright) {
+        f.vx = f.ch.speed * f.ch.spd;
+        f.dir = 1;
+    }
+    if (ks.arrowup && f.on) {
+        f.vy = -720;
+        f.on = 0;
+        playJump();
+    }
+
+    for (let k of queue.splice(0, 10)) {
+        checkCombo(f, k);
+        if (k === 'z') { f.blk = .55; f.cd = .25; }
+        if (k === 'v') attack(f, 'light');
+        if (k === 'x') attack(f, 'heavy');
+        if (k === 'c') sigMove(f);
+        if (k === 'shift') grab(f);
+        if (k === ' ') superMove(f);
+    }
+}
+
+// Basic attack (V or X key) - light or heavy
+function attack(f, t) {
+    if (f.cd) return;
+    if (t === 'shot') {
+        G.shots.push({
+            x: cx(f) + f.dir * 44,
+            y: f.y + 48,
+            vx: f.dir * 560,
+            own: f,
+            r: 13,
+            c: f.ch.accent,
+            dmg: 10,
+            life: 1.4
+        });
+        f.cd = .55;
+    } else {
+        f.atk = {
+            t: .18,
+            a: .12,
+            reach: t === 'heavy' ? 66 : 44,
+            dmg: t === 'heavy' ? 14 : 8,
+            hit: 0
+        };
+        f.cd = t === 'heavy' ? .52 : .3;
+    }
+    G.fx.push({ x: cx(f) + f.dir * 46, y: f.y + 60, dir: f.dir, c: f.ch.accent, life: .32 });
+}
+function superMove(f) {
+    if (f.sup < 100 || f.cd) return;
+    let t = f === p1 ? p2 : p1;
+    f.sup = 0;
+    flash(f.ch.name + ': SUPER!');
+
+    if (f.ch.kind === 'staff') {
+        for (let i = 0; i < 10; i++)
+            G.shots.push({
+                x: cx(f) + f.dir * (30 + i * 12),
+                y: f.y + 20 + i * 6,
+                vx: f.dir * (360 + i * 20),
+                vy: rr(-120, 120),
+                own: f,
+                r: 14,
+                c: f.ch.accent,
+                dmg: 6,
+                life: 1.1
+            });
+        damage(t, 20, f.dir * 420);
+    } else if (f.ch.kind === 'wand') {
+        for (let i = 0; i < 6; i++)
+            G.shots.push({
+                x: cx(f) + f.dir * (40 + i * 20),
+                y: f.y + 40,
+                vx: f.dir * (520 + i * 40),
+                own: f,
+                r: 18,
+                c: '#ff6a00',
+                dmg: 8,
+                life: .8
+            });
+        G.fx.push({ x: cx(f), y: f.y + 40, dir: f.dir, c: '#ff3d00', life: .6 });
+    } else if (f.ch.kind === 'sword') {
+        damage(t, 40, f.dir * 800);
+        G.fx.push({ x: cx(f) + f.dir * 50, y: f.y + 50, dir: f.dir, c: '#ffffff', life: .5 });
+    } else if (f.ch.kind === 'shield') {
+        f.blk = 1.2;
+        damage(t, 26, f.dir * 600);
+    } else if (f.ch.kind === 'dagger') {for(let i=0;i<4;i++)setTimeout(()=>{if(G.run&&t.hp>0)damage(t,10,f.dir*200)},i*120)}else if(f.ch.kind==='claw'){damage(t,32,f.dir*700);for(let i=0;i<8;i++)G.parts.push({x:cx(t),y:t.y+50,vx:rr(-300,300),vy:rr(-200,50),life:.5,c:f.ch.accent})}else if(f.ch.kind==='flask'){for(let i=0;i<12;i++)G.shots.push({x:cx(f),y:f.y+30,vx:rr(-300,300),vy:rr(-200,200),own:f,r:10,c:'#9cff5c',dmg:5,life:1})}f.cd=1.2}
+// Show floating text feedback
 function flash(t){els.pop.textContent=t;els.pop.style.display='block';setTimeout(()=>els.pop.style.display='none',850)}
+// Apply damage to a fighter
 function damage(t,n,k){if(!t.enemy)n*=D[diff].dmg;n*=(t===p1?p2.ch.atk:p1.ch.atk);if(t.blk)n*=.35;n/=t.ch.def;t.hp=Math.max(0,t.hp-n);t.vx+=k;t.sup=cl(t.sup+n*.35,0,100);for(let i=0;i<10;i++)G.parts.push({x:cx(t),y:t.y+55,vx:rr(-220,220),vy:rr(-330,80),life:.45,c:t.ch.accent})}
+// CPU opponent logic
 function ai(){let d=cx(p1)-cx(p2),o=D[diff];p2.dir=d<0?-1:1;p2.ai-=1/60;p2.vx=Math.abs(d)>150?Math.sign(d)*p2.ch.speed*o.move:-Math.sign(d||1)*55;if(p2.cd<=0&&p2.ai<=0){p2.ai=o.think;if(p2.sup>=100&&Math.random()<.4)return superMove(p2);if(Math.random()<.18)return sigMove(p2);if(Math.abs(d)<110)attack(p2,Math.random()<.65?'light':'heavy');else sigMove(p2)}}
+// Update fighter physics - cooldowns, blocking, gravity, position
 function phys(f,dt){f.cd=Math.max(0,f.cd-dt);f.blk=Math.max(0,f.blk-dt);if(f.atk){f.atk.t-=dt;f.atk.a-=dt;if(f.atk.t<=0)f.atk=null}f.vy+=1800*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.vx*=f.on?.86:.98;if(f.y+f.h>F()){f.y=F()-f.h;f.vy=0;f.on=1}else f.on=0;f.x=cl(f.x,30,W()-f.w-30)}
+// Check and resolve all collisions - melee attacks and projectiles
 function resolve(){for(let [a,b] of [[p1,p2],[p2,p1]])if(a.atk&&!a.atk.hit&&a.atk.a>0){let h={x:a.dir>0?a.x+a.w:a.x-a.atk.reach,y:a.y+28,w:a.atk.reach,h:62};if(hit(h,b)){damage(b,a.atk.dmg,a.dir*280);a.sup=cl(a.sup+9,0,100);a.atk.hit=1}}for(let s of G.shots){let t=s.own===p1?p2:p1;if(hit({x:s.x-s.r,y:s.y-s.r,w:s.r*2,h:s.r*2},t)){damage(t,s.dmg,Math.sign(s.vx)*280);s.own.sup=cl(s.own.sup+7,0,100);s.life=0}}}
+// Main update function - processes input, physics, collisions, game state
 function update(dt){ensureFighters();if(net.role==='join')return;p1.sup=cl(p1.sup+dt*2,0,100);p2.sup=cl(p2.sup+dt*2,0,100);control(p1,keys,q);if(net.role==='host')control(p2,net.keys,rq);else ai();phys(p1,dt);phys(p2,dt);for(let s of G.shots){s.x+=s.vx*dt;s.y+=(s.vy||0)*dt;s.life-=dt}G.shots=G.shots.filter(s=>s.life>0);resolve();for(let p of G.parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=760*dt;p.life-=dt}G.parts=G.parts.filter(p=>p.life>0);for(let f of G.fx)f.life-=dt;G.fx=G.fx.filter(f=>f.life>0);G.time-=dt;bars();els.timer.textContent=Math.max(0,Math.ceil(G.time));if(p1.hp<=0||p2.hp<=0||G.time<=0)endGame()}
+// End the game and show results
 function endGame(){if(G.over)return;G.over=1;G.run=0;dangerMode=false;musicMode='end';els.dangerFlash.style.borderColor='transparent';let playerWin=p1.hp>p2.hp;playEndMusic(playerWin);els.msg.innerHTML=(p1.hp===p2.hp?'DRAW':(playerWin?p1.ch.name:p2.ch.name)+' WINS')+'<br><span style="font-size:22px;color:white">click to return to menu</span>';els.msg.style.display='flex'}
+// Draw background (sky, mountains, trees, ground)
 function drawBg(){let g=ctx.createLinearGradient(0,0,0,H());g.addColorStop(0,'#6d8fc7');g.addColorStop(.55,'#173f29');g.addColorStop(1,'#16200e');ctx.fillStyle=g;ctx.fillRect(0,0,W(),H());ctx.fillStyle='#fff2a7';ctx.beginPath();ctx.arc(W()/2,92,safeRadius(44),0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff33';for(let x=20;x<W();x+=180){ctx.beginPath();ctx.arc(x,90+(x%70),safeRadius(22),0,Math.PI*2);ctx.arc(x+26,88+(x%70),safeRadius(18),0,Math.PI*2);ctx.arc(x+48,94+(x%70),safeRadius(20),0,Math.PI*2);ctx.fill()}ctx.fillStyle='#274b2d';for(let x=-40;x<W()+80;x+=90){ctx.globalAlpha=.65;ctx.fillRect(x,F()-120,28,120);ctx.globalAlpha=1;ctx.fillRect(x-26,F()-138,82,30);ctx.fillStyle='#6fa85c';ctx.fillRect(x-14,F()-154,12,22);ctx.fillStyle='#274b2d'}ctx.fillStyle='#382715';for(let x=-30;x<W()+80;x+=120){ctx.fillRect(x,F()-80,70,80);ctx.fillStyle='#d8b45a';ctx.fillRect(x+18,F()-60,14,18);ctx.fillStyle='#8b1d24';ctx.fillRect(x+46,F()-92,16,36);ctx.fillStyle='#382715'}ctx.fillStyle='#10180d';ctx.fillRect(0,F(),W(),H()-F());ctx.fillStyle='#385226';for(let x=0;x<W();x+=90)ctx.fillRect(x,F()+8,72,12)}
+// Main draw function - renders background, effects, projectiles, fighters, particles
 function draw(){ensureFighters();drawBg();for(let f of G.fx){let a=cl(f.life/.32,0,1),rad=safeRadius(24*(1-a)+8);ctx.globalAlpha=a;ctx.fillStyle=f.c;ctx.beginPath();ctx.arc(f.x+f.dir*25,f.y,rad,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6';ctx.fillRect(f.x,f.y-3,f.dir*65,6)}ctx.globalAlpha=1;for(let s of G.shots){ctx.fillStyle=s.c;ctx.fillRect(s.x-s.r,s.y-s.r,s.r*2,s.r*2);ctx.fillStyle='#fff8';ctx.fillRect(s.x-5,s.y-5,10,10)}drawModel(ctx,p1,p1.x,p1.y,.98,p1.dir<0);drawModel(ctx,p2,p2.x,p2.y,.98,p2.dir<0);for(let p of G.parts){ctx.globalAlpha=cl(p.life/.45,0,1);ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,5,5)}ctx.globalAlpha=1}
+// Main game loop - calculates delta time, updates game state, renders, syncs network state
 function loop(now){if(!G.run&&!G.over)return;let dt=Math.min(.033,(now-last)/1000||1/60);last=now;update(dt);draw();sendState();raf=requestAnimationFrame(loop)}
+// Set difficulty level
 function setDiff(v){if(!D[v])return;diff=v;document.querySelectorAll('.diff').forEach(b=>b.classList.toggle('sel',b.dataset.d===v))}
+// Bind click handlers to UI elements
 function bind(){els.playBtn.onclick=startGame;els.controlsBtn.onclick=()=>els.how.classList.toggle('show');els.hostBtn.onclick=hostGame;els.joinBtn.onclick=joinGame;els.cancelHostBtn.onclick=showMenu;els.msg.onclick=showMenu;document.querySelectorAll('.diff').forEach(b=>b.onclick=()=>setDiff(b.dataset.d))}
 
+// ============================================================================
+// AUDIO SYSTEM - Web Audio API synthesizer
+// ============================================================================
+
+// Audio context and effects chain setup
 const audioCtx=new (window.AudioContext||window.webkitAudioContext)(),master=audioCtx.createGain(),delay=audioCtx.createDelay(),feedback=audioCtx.createGain();master.gain.value=.9;master.connect(audioCtx.destination);delay.delayTime.value=.18;feedback.gain.value=.25;delay.connect(feedback);feedback.connect(delay);delay.connect(master);
+// Synthesize a voice/tone - freq: frequency in Hz, dur: duration in seconds
 function voice(freq,dur,{type='sine',vol=.04,pan=0,cutoff=8000,attack=.04}={}){const o=audioCtx.createOscillator(),gain=audioCtx.createGain(),filter=audioCtx.createBiquadFilter(),panner=audioCtx.createStereoPanner();filter.type='lowpass';filter.frequency.value=cutoff;panner.pan.value=pan;o.type=type;o.frequency.value=freq;o.connect(filter);filter.connect(gain);gain.connect(panner);panner.connect(master);panner.connect(delay);let t=audioCtx.currentTime;gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(vol,t+attack);gain.gain.exponentialRampToValueAtTime(Math.max(.0001,vol*.55),t+dur*.55);gain.gain.exponentialRampToValueAtTime(.0001,t+dur);o.start(t);o.stop(t+dur)}
+// Jump sound effect
 function playJump(){voice(240,.16,{type:'sine',vol:.055,cutoff:2500,attack:.04})}
+// Music scale and chord progressions
 const scale=[262,294,330,349,392,440,493],chords=[[0,2,4],[3,5,1],[4,6,2],[0,2,4]],melodyA=[0,2,3,5,3,2,0,4,3,2],melodyB=[4,5,4,2,0,2,3,5,6,5];
+// Music state variables
 let beat=0,bar=0,section=0,dangerMode=false,musicInterval,musicMode='menu';
+// Play procedural music based on game state (menu, battle, end)
 function playMusic(mode='menu'){clearInterval(musicInterval);musicMode=mode;els.dangerFlash.style.borderColor='transparent';musicInterval=setInterval(()=>{const inBattle=musicMode==='battle'&&G.run&&!G.over,low=inBattle&&((p1&&p1.hp/p1.maxHp<.3)||(p2&&p2.hp/p2.maxHp<.3));dangerMode=!!low;els.dangerFlash.style.borderColor=dangerMode&&beat%2===0?'red':'transparent';if(beat%16===0){bar++;section=(section+1)%2}const chord=chords[Math.floor(beat/2)%chords.length],root=scale[chord[0]];if(musicMode==='battle'){chord.forEach((i,idx)=>voice(scale[i]*1.2,.25,{type:'square',vol:.05,pan:idx===0?-.2:idx===2?.2:0,cutoff:5000,attack:.02}));voice(root/2,.25,{type:'triangle',vol:dangerMode?.18:.14,cutoff:700,attack:.02});if(beat%2===0)voice(80,.08,{type:'sine',vol:.12,cutoff:400});voice(3000,.03,{type:'square',vol:.02,cutoff:8000});voice(root/4,.3,{type:'sine',vol:.06,cutoff:500})}else{chord.forEach((i,idx)=>voice(scale[i],1.2,{type:'sine',vol:.025,pan:idx===0?-.3:idx===2?.3:0,cutoff:6000}));voice(root/2,.5,{type:'triangle',vol:.055,pan:-.1,cutoff:900});const harmony=[scale[(chord[0]+2)%scale.length],scale[(chord[0]+4)%scale.length]];harmony.forEach((n,i)=>voice(n,1.4,{type:'sine',vol:.02,pan:i?.3:-.3,cutoff:3000}));if(beat%8===0)voice(90,.08,{type:'sine',vol:.025,cutoff:800})}beat++},musicMode==='battle'?90:240)}
+// Play victory/defeat jingle
 function playEndMusic(win){clearInterval(musicInterval);musicMode='end';dangerMode=false;els.dangerFlash.style.borderColor='transparent';const seq=win?[523,659,784,1046,784,659]:[392,349,311,262,220,196];let i=0;musicInterval=setInterval(()=>{els.dangerFlash.style.borderColor='transparent';let n=seq[i%seq.length];voice(n,.35,{type:'sine',vol:.09,pan:i%2?.2:-.2,cutoff:7000});voice(n*1.25,.35,{type:'sine',vol:.04,pan:i%2?-.2:.2,cutoff:6000});i++},260)}
+// Runtime assertions for debugging
 function tests(){console.assert(!/\}\s*const chord=/.test(playMusic.toString()),'no orphan music block after playMusic');console.assert(playMusic.toString().includes("musicMode==='battle'&&G.run&&!G.over"),'low health effect only runs during active battle');console.assert(voice.toString().includes('attack'),'soft synth voice envelope exists');console.assert(Array.isArray(comboBuf),'combo buffer exists');console.assert(els.statusText&&typeof els.statusText.textContent==='string','statusText element exists and is not window.status');console.assert(typeof startGame==='function'&&typeof hostGame==='function'&&typeof joinGame==='function','buttons wired');console.assert(chars.length===12,'characters loaded');console.assert(/^[0-9]{6}$/.test(makeCode()),'epoch seed code is 6 digits');console.assert(typeof grab==='function','Shift grab exists');console.assert(typeof sigMove==='function','C signature move exists');console.assert(typeof superMove==='function','supers exist');console.assert(fighter(0,chars[0]).maxHp>chars[0].hp*2,'Health boost makes matches last longer');console.assert(safeRadius(-5)>0,'arc radius is always positive');console.assert(typeof ensureFighters==='function','fighters are forced visible/valid every frame');console.assert(typeof drawModel==='function','detailed player models are rendered in fights');console.assert(!drawModel.toString().includes('fillRect(-9,-12,76,142)'),'character black box outline removed')}
+// ============================================================================
+// EVENT LISTENERS & INITIALIZATION
+// ============================================================================
+
+// Handle window resize
 addEventListener('resize',()=>{resize();drawBg()});addEventListener('keydown',e=>{let k=e.key.toLowerCase();if(!keys[k])q.push(k);keys[k]=1;if(net.role==='join')send({type:'keys',keys,q:[k]});if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Shift'].includes(e.key))e.preventDefault()});addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=0;if(net.role==='join')send({type:'keys',keys,q:[]})});
+// Initialize game
 playMusic('menu');Object.assign(window,{startGame,hostGame,joinGame,showMenu,setDiff});resize();makeCards();bind();tests();drawBg();
 </script>
 </body>
