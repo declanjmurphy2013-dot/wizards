@@ -37,12 +37,15 @@ Wizards & Warriors is a browser fighting game with high-fantasy style.
 - Low-health effects should stop on return to menu
 - Magic/projectile attacks now deal damage without stun or knockback
 - Physical attacks, grabs, and heavy impact moves still apply knockback
+- Host / Join handshake retries join requests until the host starts the match
+- Host / Join now uses the joining player's selected fighter
 
 ## Recent bug status
 Recent fixes:
 - Removed orphan music block causing unexpected `}` syntax error.
 - Rewrote clean full single-file HTML.
 - Removed stun/knockback from magic/projectile attacks.
+- Fixed Host / Join startup so the joiner waits for host acknowledgement.
 
 ## Next requested workflow
 User wants future edits to be applied to local repo:

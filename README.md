@@ -52,6 +52,8 @@ Wizards & Warriors is a fast-paced 1v1 fighting game featuring unique characters
 - Host / Join system using a 6-digit code
 - Uses browser `BroadcastChannel`
 - Intended for same-machine or same-browser-environment play
+- Joiners send their selected fighter to the host before the match starts
+- Join requests retry until the host acknowledges the match
 
 ---
 
@@ -68,4 +70,3 @@ Wizards & Warriors is a fast-paced 1v1 fighting game featuring unique characters
 
 ## Running the Game
 Open `index.html` in a browser.
-

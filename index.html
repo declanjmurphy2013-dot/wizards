@@ -426,20 +426,20 @@ function bars() {
 }
 
 // Reset game state for a new match
-function reset() {
+function reset(enemyId = null) {
     G = { run: 1, over: 0, time: 90, parts: [], shots: [], fx: [] };
     q = [];
     rq = [];
     p1 = fighter(170, chars[sel]);
 
-    let e = Math.floor(Math.random() * chars.length);
-    if (e === sel) e = (e + 1) % chars.length;
+    let e = Number.isInteger(enemyId) && chars[enemyId] ? enemyId : Math.floor(Math.random() * chars.length);
+    if (e === sel && enemyId === null) e = (e + 1) % chars.length;
 
     p2 = fighter(W() - 240, chars[e], 1);
-    p2.hp = p2.maxHp = Math.round(p2.maxHp * D[diff].hp);
+    if (net.role === 'cpu') p2.hp = p2.maxHp = Math.round(p2.maxHp * D[diff].hp);
 
     els.p1name.textContent = p1.ch.name + ' - ' + p1.ch.title;
-    els.p2name.textContent = p2.ch.name + ' - ' + p2.ch.title + ' - ' + diff;
+    els.p2name.textContent = p2.ch.name + ' - ' + p2.ch.title + (net.role === 'cpu' ? ' - ' + diff : ' - P2');
     bars();
 }
 
@@ -469,6 +469,7 @@ function showMenu() {
     G.run = G.over = 0;
     dangerMode = false;
     musicMode = 'menu';
+    clearInterval(net.joinTimer);
     if (net.ch) net.ch.close();
     net = { role: 'cpu', ch: null, keys: {} };
     els.menu.style.display = 'flex';
@@ -495,27 +496,28 @@ function hostGame() {
 
 // Join a multiplayer game
 function joinGame() {
-    musicMode = 'battle';
-    playMusic('battle');
     let c = els.codeInput.value.trim();
     if (!/^[0-9]{6}$/.test(c)) {
         els.statusText.textContent = 'ENTER 6 DIGITS';
         return;
     }
     openRoom(c, 'join');
-    reset();
-    begin();
-    send({ type: 'join' });
+    els.statusText.textContent = 'JOINING ' + c;
+    send({ type: 'join', sel });
+    net.joinTimer = setInterval(() => send({ type: 'join', sel }), 500);
 }
 
-// Open a BroadcastChannel room for local network play
+// Open a BroadcastChannel room for same-browser local play
 function openRoom(c, role) {
+    clearInterval(net.joinTimer);
     if (net.ch) net.ch.close();
     net = {
         role,
         code: c,
         ch: new BroadcastChannel('ww-' + c),
-        keys: {}
+        keys: {},
+        started: false,
+        joinTimer: null
     };
     net.ch.onmessage = e => onNet(e.data);
     els.statusText.textContent = (role === 'host' ? 'HOST CODE: ' : 'JOINED CODE: ') + c;
@@ -529,18 +531,34 @@ function send(o) {
 // Handle incoming network messages
 function onNet(m) {
     if (net.role === 'host' && m.type === 'join') {
-        els.loading.style.display = 'none';
-        reset();
-        begin();
+        if (!net.started) {
+            net.started = true;
+            els.loading.style.display = 'none';
+            reset(m.sel);
+            begin();
+        }
+        send({ type: 'start' });
     }
     if (net.role === 'host' && m.type === 'keys') {
         net.keys = m.keys || {};
         rq.push(...(m.q || []));
     }
+    if (net.role === 'join' && m.type === 'start') {
+        let firstStart = !net.started;
+        net.started = true;
+        clearInterval(net.joinTimer);
+        net.joinTimer = null;
+        if (firstStart) begin();
+    }
     if (net.role === 'join' && m.type === 'state') {
+        net.started = true;
+        clearInterval(net.joinTimer);
+        net.joinTimer = null;
         Object.assign(G, m.G);
         p1 = m.p1;
         p2 = m.p2;
+        els.p1name.textContent = p1.ch.name + ' - ' + p1.ch.title;
+        els.p2name.textContent = p2.ch.name + ' - ' + p2.ch.title + ' - P2';
         bars();
         draw();
     }
@@ -745,7 +763,7 @@ function superMove(f) {
 // Show floating text feedback
 function flash(t){els.pop.textContent=t;els.pop.style.display='block';setTimeout(()=>els.pop.style.display='none',850)}
 // Apply damage to a fighter
-function damage(t,n,k){if(!t.enemy)n*=D[diff].dmg;n*=(t===p1?p2.ch.atk:p1.ch.atk);if(t.blk)n*=.35;n/=t.ch.def;t.hp=Math.max(0,t.hp-n);t.vx+=k;t.sup=cl(t.sup+n*.35,0,100);for(let i=0;i<10;i++)G.parts.push({x:cx(t),y:t.y+55,vx:rr(-220,220),vy:rr(-330,80),life:.45,c:t.ch.accent})}
+function damage(t,n,k){if(net.role==='cpu'&&!t.enemy)n*=D[diff].dmg;n*=(t===p1?p2.ch.atk:p1.ch.atk);if(t.blk)n*=.35;n/=t.ch.def;t.hp=Math.max(0,t.hp-n);t.vx+=k;t.sup=cl(t.sup+n*.35,0,100);for(let i=0;i<10;i++)G.parts.push({x:cx(t),y:t.y+55,vx:rr(-220,220),vy:rr(-330,80),life:.45,c:t.ch.accent})}
 // CPU opponent logic
 function ai(){let d=cx(p1)-cx(p2),o=D[diff];p2.dir=d<0?-1:1;p2.ai-=1/60;p2.vx=Math.abs(d)>150?Math.sign(d)*p2.ch.speed*o.move:-Math.sign(d||1)*55;if(p2.cd<=0&&p2.ai<=0){p2.ai=o.think;if(p2.sup>=100&&Math.random()<.4)return superMove(p2);if(Math.random()<.18)return sigMove(p2);if(Math.abs(d)<110)attack(p2,Math.random()<.65?'light':'heavy');else sigMove(p2)}}
 // Update fighter physics - cooldowns, blocking, gravity, position
