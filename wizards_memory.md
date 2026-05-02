@@ -35,14 +35,15 @@ Wizards & Warriors is a browser fighting game with high-fantasy style.
 - Menu music / battle music / end music
 - Battle music should be more action-focused
 - Low-health effects should stop on return to menu
+- Magic/projectile attacks now deal damage without stun or knockback
+- Physical attacks, grabs, and heavy impact moves still apply knockback
 
 ## Recent bug status
-Last issue fixed in canvas:
+Recent fixes:
 - Removed orphan music block causing unexpected `}` syntax error.
 - Rewrote clean full single-file HTML.
+- Removed stun/knockback from magic/projectile attacks.
 
 ## Next requested workflow
 User wants future edits to be applied to local repo:
-C:/Users/decla/src/wizard/
-
-Since ChatGPT cannot directly edit local disk, user should paste code changes or upload the file here.
+C:/Users/decla/src/wizards/

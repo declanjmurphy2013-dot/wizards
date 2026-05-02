@@ -721,7 +721,7 @@ function superMove(f) {
                 dmg: 6,
                 life: 1.1
             });
-        damage(t, 20, f.dir * 420);
+        damage(t, 20, 0);
     } else if (f.ch.kind === 'wand') {
         for (let i = 0; i < 6; i++)
             G.shots.push({
@@ -751,7 +751,7 @@ function ai(){let d=cx(p1)-cx(p2),o=D[diff];p2.dir=d<0?-1:1;p2.ai-=1/60;p2.vx=Ma
 // Update fighter physics - cooldowns, blocking, gravity, position
 function phys(f,dt){f.cd=Math.max(0,f.cd-dt);f.blk=Math.max(0,f.blk-dt);if(f.atk){f.atk.t-=dt;f.atk.a-=dt;if(f.atk.t<=0)f.atk=null}f.vy+=1800*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.vx*=f.on?.86:.98;if(f.y+f.h>F()){f.y=F()-f.h;f.vy=0;f.on=1}else f.on=0;f.x=cl(f.x,30,W()-f.w-30)}
 // Check and resolve all collisions - melee attacks and projectiles
-function resolve(){for(let [a,b] of [[p1,p2],[p2,p1]])if(a.atk&&!a.atk.hit&&a.atk.a>0){let h={x:a.dir>0?a.x+a.w:a.x-a.atk.reach,y:a.y+28,w:a.atk.reach,h:62};if(hit(h,b)){damage(b,a.atk.dmg,a.dir*280);a.sup=cl(a.sup+9,0,100);a.atk.hit=1}}for(let s of G.shots){let t=s.own===p1?p2:p1;if(hit({x:s.x-s.r,y:s.y-s.r,w:s.r*2,h:s.r*2},t)){damage(t,s.dmg,Math.sign(s.vx)*280);s.own.sup=cl(s.own.sup+7,0,100);s.life=0}}}
+function resolve(){for(let [a,b] of [[p1,p2],[p2,p1]])if(a.atk&&!a.atk.hit&&a.atk.a>0){let h={x:a.dir>0?a.x+a.w:a.x-a.atk.reach,y:a.y+28,w:a.atk.reach,h:62};if(hit(h,b)){damage(b,a.atk.dmg,a.dir*280);a.sup=cl(a.sup+9,0,100);a.atk.hit=1}}for(let s of G.shots){let t=s.own===p1?p2:p1;if(hit({x:s.x-s.r,y:s.y-s.r,w:s.r*2,h:s.r*2},t)){damage(t,s.dmg,0);s.own.sup=cl(s.own.sup+7,0,100);s.life=0}}}
 // Main update function - processes input, physics, collisions, game state
 function update(dt){ensureFighters();if(net.role==='join')return;p1.sup=cl(p1.sup+dt*2,0,100);p2.sup=cl(p2.sup+dt*2,0,100);control(p1,keys,q);if(net.role==='host')control(p2,net.keys,rq);else ai();phys(p1,dt);phys(p2,dt);for(let s of G.shots){s.x+=s.vx*dt;s.y+=(s.vy||0)*dt;s.life-=dt}G.shots=G.shots.filter(s=>s.life>0);resolve();for(let p of G.parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=760*dt;p.life-=dt}G.parts=G.parts.filter(p=>p.life>0);for(let f of G.fx)f.life-=dt;G.fx=G.fx.filter(f=>f.life>0);G.time-=dt;bars();els.timer.textContent=Math.max(0,Math.ceil(G.time));if(p1.hp<=0||p2.hp<=0||G.time<=0)endGame()}
 // End the game and show results
