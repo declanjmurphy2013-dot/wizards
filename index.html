@@ -238,7 +238,8 @@ const SUPER_START = 0,
     SUPER_GAIN = 1.05,
     SUPER_COOLDOWN = 1.75;
 
-const ULT_DUR = 1.55;
+const ULT_DUR = 1.55,
+    KNOCKBACK_SCALE = 1.28;
 
 // Utility functions: W (width), H (height), F (floor Y), cl (clamp), cx (center X), hit (collision), rr (random range), safeRadius (positive radius)
 const W = () => innerWidth,
@@ -1186,7 +1187,7 @@ function guardHit(t,n,k){
     return {n:n*dmg,k:k*push,blocked:front};
 }
 // Apply damage to a fighter
-function damage(t,n,k){if(G.ult&&!G.ultHit)return;if(t.heldBy)releaseGrab(fighterByRef(t.heldBy));if(net.role==='cpu'&&!t.enemy)n*=D[diff].dmg;n*=(t===p1?p2.ch.atk:p1.ch.atk);let g=guardHit(t,n,k);n=g.n;k=g.k;n/=t.ch.def;t.hp=Math.max(0,t.hp-n);t.vx+=k;t.sup=cl(t.sup+n*.35,0,100);G.shake=Math.max(G.shake||0,Math.min(g.blocked?8:18,2+n*.35));for(let i=0;i<(g.blocked?8:14);i++)G.parts.push({x:cx(t)+rr(-12,12),y:t.y+rr(30,82),vx:rr(-260,260)+Math.sign(k||1)*rr(40,180),vy:rr(-380,80),life:rr(.28,.62),c:g.blocked? t.ch.accent : i%3? t.ch.accent:'#f6d27a',r:rr(2,7)})}
+function damage(t,n,k){if(G.ult&&!G.ultHit)return;if(t.heldBy)releaseGrab(fighterByRef(t.heldBy));if(net.role==='cpu'&&!t.enemy)n*=D[diff].dmg;n*=(t===p1?p2.ch.atk:p1.ch.atk);let g=guardHit(t,n,k);n=g.n;k=g.k*KNOCKBACK_SCALE;n/=t.ch.def;t.hp=Math.max(0,t.hp-n);t.vx+=k;t.sup=cl(t.sup+n*.35,0,100);G.shake=Math.max(G.shake||0,Math.min(g.blocked?8:18,2+n*.35));for(let i=0;i<(g.blocked?8:14);i++)G.parts.push({x:cx(t)+rr(-12,12),y:t.y+rr(30,82),vx:rr(-260,260)+Math.sign(k||1)*rr(40,180),vy:rr(-380,80),life:rr(.28,.62),c:g.blocked? t.ch.accent : i%3? t.ch.accent:'#f6d27a',r:rr(2,7)})}
 // CPU opponent logic
 function ai(){
     let d=cx(p1)-cx(p2),dist=Math.abs(d),o=D[diff],
