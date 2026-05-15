@@ -943,7 +943,7 @@ function ensureFighters() {
     p1.x = cl(p1.x, 30, W() - p1.w - 30);
     p2.x = cl(p2.x, 30, W() - p2.w - 30);
     p1.y = cl(p1.y, 20, F() - p1.h);
-    p2.y = cl(p2.y, 20, F() - p1.h);
+    p2.y = cl(p2.y, 20, F() - p2.h);
 
     p1.on = p1.y + p1.h >= F() - 1;
     p2.on = p2.y + p2.h >= F() - 1;
@@ -1058,7 +1058,7 @@ function joinGame() {
     els.statusText.textContent = 'JOINING ' + c;
     sendJoin();
     net.joinTimer = setInterval(sendJoin, 500);
-    net.inputTimer = setInterval(() => sendInput('', false), 100);
+    net.inputTimer = setInterval(() => sendInput('', false, false), 33);
 }
 
 // Open a multiplayer room. BroadcastChannel keeps same-device testing working;
@@ -1079,7 +1079,9 @@ function openRoom(c, role) {
         joinTimer: null,
         inputTimer: null,
         seen: {},
-        localP2Until: 0
+        localP2Until: 0,
+        lastState: 0,
+        lastRemoteStamp: 0
     };
     net.ch.onmessage = e => onNet(e.data);
     els.statusText.textContent = (role === 'host' ? 'HOST CODE: ' : 'JOINED CODE: ') + c;
@@ -1121,7 +1123,7 @@ function attachPeerConnection(conn) {
     conn.on('open', () => {
         els.statusText.textContent = (net.role === 'host' ? 'CONNECTED HOST ' : 'CONNECTED JOIN ') + net.code;
         if (net.role === 'join') sendJoin();
-        if (net.role === 'host' && net.started) send({ type: 'state', G, p1, p2 });
+        if (net.role === 'host' && net.started) send({ type: 'state', G: netG(), p1: fighterSnap(p1), p2: fighterSnap(p2), stamp: Date.now() });
     });
     conn.on('data', data => onNet(data));
     conn.on('close', () => {
@@ -1149,13 +1151,22 @@ function sendJoin() {
     send({ type: 'join', sel });
 }
 
+const NET_STATE_MS = 50;
+
 // Multiplayer input snapshots keep remote controls small and predictable
 function inputKeys() {
     return {
         arrowleft: !!keys.arrowleft,
         arrowright: !!keys.arrowright,
         arrowup: !!keys.arrowup,
-        arrowdown: !!keys.arrowdown
+        arrowdown: !!keys.arrowdown,
+        z: !!keys.z,
+        b: !!keys.b,
+        v: !!keys.v,
+        x: !!keys.x,
+        c: !!keys.c,
+        shift: !!keys.shift,
+        space: !!keys[' ']
     };
 }
 
@@ -1172,8 +1183,12 @@ function setHeld(raw, down) {
 
 function fighterSnap(f) {
     if (!f) return null;
+    let width = Math.max(1, W()),
+        height = Math.max(1, H()),
+        floor = F();
     return {
         x: f.x, y: f.y, w: f.w, h: f.h, vx: f.vx, vy: f.vy,
+        nx: f.x / width, fy: floor - f.y, nvx: f.vx / width, nvy: f.vy / height,
         dir: f.dir, hp: f.hp, maxHp: f.maxHp, sup: f.sup, sta: f.sta, maxSta: f.maxSta, tired: f.tired,
         ch: f.ch, enemy: f.enemy, on: f.on, cd: f.cd, blk: f.blk,
         atk: f.atk ? Object.assign({}, f.atk) : null, ai: f.ai,
@@ -1182,16 +1197,83 @@ function fighterSnap(f) {
     };
 }
 
+function denormFighterSnap(snap) {
+    if (!snap) return snap;
+    if (!Number.isFinite(snap.nx)) return snap;
+    let mapped = Object.assign({}, snap),
+        width = Math.max(1, W()),
+        height = Math.max(1, H()),
+        floor = F();
+    mapped.x = mapped.nx * width;
+    mapped.y = floor - (Number.isFinite(mapped.fy) ? mapped.fy : (floor - (mapped.y || 0)));
+    if (Number.isFinite(mapped.nvx)) mapped.vx = mapped.nvx * width;
+    if (Number.isFinite(mapped.nvy)) mapped.vy = mapped.nvy * height;
+    return mapped;
+}
+
 function applyFighterSnap(target, snap) {
     if (!target || !snap) return target;
+    snap = denormFighterSnap(snap);
     if (snap.ch && Number.isInteger(snap.ch.id) && chars[snap.ch.id]) snap.ch = chars[snap.ch.id];
     return Object.assign(target, snap);
 }
 
 function sendInput(k, down, fire = down) {
     if (net.role !== 'join') return;
-    if (down || fire) net.localP2Until = Date.now() + 900;
+    if (down || fire) net.localP2Until = Date.now() + 450;
     send({ type: 'input', sel, keys: inputKeys(), press: fire && k ? k : '', p2: fighterSnap(p2) });
+}
+
+function shotSnap(s) {
+    if (!s) return s;
+    let width = Math.max(1, W()),
+        height = Math.max(1, H()),
+        floor = F();
+    return Object.assign({}, s, {
+        nx: s.x / width,
+        fy: floor - s.y,
+        nvx: (s.vx || 0) / width,
+        nvy: (s.vy || 0) / height
+    });
+}
+
+function denormShotSnap(s) {
+    if (!s || !Number.isFinite(s.nx)) return s;
+    let width = Math.max(1, W()),
+        height = Math.max(1, H()),
+        floor = F(),
+        mapped = Object.assign({}, s);
+    mapped.x = mapped.nx * width;
+    mapped.y = floor - (Number.isFinite(mapped.fy) ? mapped.fy : (floor - (mapped.y || 0)));
+    mapped.vx = (mapped.nvx || 0) * width;
+    mapped.vy = (mapped.nvy || 0) * height;
+    return mapped;
+}
+
+function netG() {
+    return {
+        run: G.run,
+        over: G.over,
+        time: G.time,
+        shake: G.shake || 0,
+        shots: (G.shots || []).slice(-24).map(shotSnap),
+        ult: G.ult || null,
+        bossWarn: G.bossWarn || null,
+        storyBoss: G.storyBoss || 0,
+        paid: G.paid || 0,
+        parts: [],
+        fx: []
+    };
+}
+
+function applyNetG(snap) {
+    if (!snap) return;
+    let mapped = Object.assign({}, snap, {
+        shots: (snap.shots || []).map(denormShotSnap),
+        parts: [],
+        fx: []
+    });
+    Object.assign(G, mapped);
 }
 
 function applyQueuedInput(f, queue) {
@@ -1246,14 +1328,17 @@ function onNet(m) {
             reset(m.sel);
             begin();
         }
-        send({ type: 'state', G, p1, p2 });
+        send({ type: 'state', G: netG(), p1: fighterSnap(p1), p2: fighterSnap(p2), stamp: Date.now() });
     }
     if (net.role === 'host' && m.type === 'input') {
-        net.keys = Object.assign({ arrowleft: false, arrowright: false, arrowup: false }, m.keys || {});
+        net.keys = Object.assign({ arrowleft: false, arrowright: false, arrowup: false, arrowdown: false, z: false, b: false, v: false, x: false, c: false, shift: false, space: false }, m.keys || {});
+        net.keys[' '] = !!net.keys.space;
         if (p2 && m.p2) applyFighterSnap(p2, m.p2);
         if (m.press) rq.push(m.press);
     }
     if (net.role === 'join' && m.type === 'state') {
+        if (m.stamp && net.lastRemoteStamp && m.stamp < net.lastRemoteStamp) return;
+        net.lastRemoteStamp = m.stamp || Date.now();
         let firstState = !net.started;
         net.started = true;
         clearInterval(net.joinTimer);
@@ -1261,14 +1346,14 @@ function onNet(m) {
         let localKeys = inputKeys(),
             localQueue = q.splice(0, 10),
             localP2 = p2,
-            keepLocal = localP2 && (Date.now() < (net.localP2Until || 0) || localKeys.arrowleft || localKeys.arrowright || localKeys.arrowup || localQueue.length);
-        Object.assign(G, m.G);
-        p1 = m.p1;
-        p2 = keepLocal ? applyFighterSnap(m.p2, {
+            keepLocal = localP2 && (Date.now() < (net.localP2Until || 0) || localKeys.arrowleft || localKeys.arrowright || localKeys.arrowup || localKeys.arrowdown || localQueue.length);
+        applyNetG(m.G);
+        p1 = applyFighterSnap(p1 || {}, m.p1);
+        p2 = keepLocal ? applyFighterSnap(denormFighterSnap(m.p2) || {}, {
             x: localP2.x, y: localP2.y, vx: localP2.vx, vy: localP2.vy,
             dir: localP2.dir, on: localP2.on, cd: localP2.cd, blk: localP2.blk,
             atk: localP2.atk, sup: localP2.sup, sta: localP2.sta, maxSta: localP2.maxSta, tired: localP2.tired
-        }) : m.p2;
+        }) : applyFighterSnap(p2 || {}, m.p2);
         if (keepLocal) {
             control(p2, localKeys, localQueue);
             phys(p2, 1 / 60);
@@ -1285,7 +1370,11 @@ function onNet(m) {
 
 // Send game state to connected player (host only)
 function sendState() {
-    if (net.role === 'host') send({ type: 'state', G, p1, p2 });
+    if (net.role !== 'host') return;
+    let now = performance.now();
+    if (now - (net.lastState || 0) < NET_STATE_MS) return;
+    net.lastState = now;
+    send({ type: 'state', G: netG(), p1: fighterSnap(p1), p2: fighterSnap(p2), stamp: Date.now() });
 }
 function refOf(f) {
     return f === p1 ? 'p1' : 'p2';
@@ -2842,7 +2931,7 @@ function tests(){console.assert(!/\}\s*const chord=/.test(playMusic.toString()),
 // ============================================================================
 
 // Handle window resize
-addEventListener('resize',()=>{resize();drawBg()});addEventListener('storage',e=>{if(!net.code||e.key!=='ww-'+net.code||!e.newValue)return;try{let m=JSON.parse(e.newValue);if(m.from!==net.role)onNet(m)}catch(err){}});addEventListener('keydown',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw),first=!keys[k];setHeld(raw,true);if(first)q.push(k);sendInput(k,true,first);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Shift','Enter'].includes(e.key)||['w','a','d','s','b'].includes(raw))e.preventDefault()});addEventListener('keyup',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw);setHeld(raw,false);sendInput(k,false,false)});
+addEventListener('resize',()=>{resize();drawBg()});addEventListener('storage',e=>{if(!net.code||e.key!=='ww-'+net.code||!e.newValue)return;try{let m=JSON.parse(e.newValue);if(m.from!==net.role)onNet(m)}catch(err){}});addEventListener('keydown',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw),first=!keys[k];setHeld(raw,true);if(first)q.push(k);sendInput(k,true,first);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Shift','Enter'].includes(e.key)||['w','a','d','s','b','v','x','c','z'].includes(raw))e.preventDefault()});addEventListener('keyup',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw);setHeld(raw,false);sendInput(k,false,false)});
 // Initialize game
 playMusic('menu');Object.assign(window,{startGame,hostGame,joinGame,showMenu,setDiff});resize();makeCards();bind();tests();drawBg();
 </script>
