@@ -49,6 +49,7 @@
   <button id="storyMenuBtn" class="storyMenuBtn">MENU</button><div id="storyHud" class="storyHud"></div><div id="storyMini" class="storyMini"></div>
   <div id="loading" class="loading"><div class="loadbox"><h1>Waiting<br>For Challenger</h1><div class="hint">Give this 6-digit seed code to your friend:</div><div id="seedCode" class="seed">000000</div><div class="hint">They type it next to JOIN, then press JOIN.</div><button id="cancelHostBtn">BACK</button></div></div>
 </div>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 'use strict';
 // ============================================================================
@@ -1017,7 +1018,11 @@ function showMenu() {
     clearInterval(net.joinTimer);
     clearInterval(net.inputTimer);
     held = {};
+    if (net.conn) {
+        try { net.conn.close(); } catch (e) {}
+    }
     if (net.ch) net.ch.close();
+    if (net.peer) net.peer.destroy();
     net = { role: 'cpu', ch: null, keys: {} };
     els.menu.style.display = 'flex';
     els.hud.style.display = els.labels.style.display = els.msg.style.display = els.pop.style.display = els.loading.style.display = els.shop.style.display = els.storyCreate.style.display = els.storyHud.style.display = els.storyMini.style.display = els.storyMenuBtn.style.display = 'none';
@@ -1056,15 +1061,19 @@ function joinGame() {
     net.inputTimer = setInterval(() => sendInput('', false), 100);
 }
 
-// Open a BroadcastChannel room for same-browser local play
+// Open a multiplayer room. BroadcastChannel keeps same-device testing working;
+// PeerJS/WebRTC lets different devices connect through public signaling.
 function openRoom(c, role) {
     clearInterval(net.joinTimer);
     clearInterval(net.inputTimer);
     if (net.ch) net.ch.close();
+    if (net.peer) net.peer.destroy();
     net = {
         role,
         code: c,
         ch: new BroadcastChannel('ww-' + c),
+        peer: null,
+        conn: null,
         keys: {},
         started: false,
         joinTimer: null,
@@ -1074,11 +1083,60 @@ function openRoom(c, role) {
     };
     net.ch.onmessage = e => onNet(e.data);
     els.statusText.textContent = (role === 'host' ? 'HOST CODE: ' : 'JOINED CODE: ') + c;
+    setupPeerRoom(c, role);
+}
+
+function setupPeerRoom(c, role) {
+    if (typeof Peer === 'undefined') {
+        els.statusText.textContent += ' | server offline, local only';
+        return;
+    }
+    try {
+        let id = role === 'host' ? 'ww-' + c : undefined;
+        net.peer = new Peer(id, { host: '0.peerjs.com', port: 443, path: '/', secure: true });
+        net.peer.on('open', () => {
+            if (role === 'host') els.statusText.textContent = 'HOST CODE: ' + c + ' | ONLINE';
+            else {
+                els.statusText.textContent = 'JOINING ' + c + ' | ONLINE';
+                attachPeerConnection(net.peer.connect('ww-' + c, { reliable: true }));
+            }
+        });
+        net.peer.on('connection', conn => attachPeerConnection(conn));
+        net.peer.on('error', err => {
+            els.statusText.textContent = (role === 'host' ? 'HOST CODE: ' : 'JOINED CODE: ') + c + ' | local fallback';
+            console.warn('Peer connection error', err);
+        });
+    } catch (err) {
+        els.statusText.textContent += ' | local fallback';
+        console.warn('Peer setup failed', err);
+    }
+}
+
+function attachPeerConnection(conn) {
+    if (!conn) return;
+    if (net.conn && net.conn !== conn) {
+        try { net.conn.close(); } catch (e) {}
+    }
+    net.conn = conn;
+    conn.on('open', () => {
+        els.statusText.textContent = (net.role === 'host' ? 'CONNECTED HOST ' : 'CONNECTED JOIN ') + net.code;
+        if (net.role === 'join') sendJoin();
+        if (net.role === 'host' && net.started) send({ type: 'state', G, p1, p2 });
+    });
+    conn.on('data', data => onNet(data));
+    conn.on('close', () => {
+        if (net.conn === conn) net.conn = null;
+        if (net.code) els.statusText.textContent = 'DISCONNECTED ' + net.code;
+    });
+    conn.on('error', err => console.warn('Peer data error', err));
 }
 
 // Send message over network
 function send(o) {
     if (!o.id) o.id = net.role + '-' + Date.now() + '-' + Math.random();
+    if (net.conn && net.conn.open) {
+        try { net.conn.send(o); } catch (e) {}
+    }
     if (net.ch) net.ch.postMessage(o);
     if (net.code) {
         try {
