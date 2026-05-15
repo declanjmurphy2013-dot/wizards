@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Wizards & Warriors</title>
 <style>*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#07140c;color:white;font-family:Georgia,"Times New Roman",serif}canvas{display:block;width:100vw;height:100vh;background:#0b1f13}#ui{position:fixed;inset:0;pointer-events:none}#dangerFlash{position:fixed;inset:0;border:10px solid transparent;pointer-events:none;z-index:999}.menu{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;background:linear-gradient(145deg,#07140c,#163b22 42%,#2e2111 78%,#080b07)}.card{width:min(980px,94vw);max-height:94vh;overflow:auto;text-align:center;padding:28px;border:4px ridge #d8b45a;border-radius:18px;background:#102413f2}h1{margin:0 0 8px;font-size:clamp(44px,8vw,86px);line-height:.9;letter-spacing:2px;color:#f5d889}.subtitle{margin-bottom:18px;color:#e7d9b7;font:18px Georgia}.wallet{display:inline-block;margin:6px 0 10px;padding:8px 14px;border:2px solid #d8b45a;border-radius:8px;background:#050008;color:#fff2a6;font:900 18px Arial}.fighters,.shopgrid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin:16px 0}.fighter,.crate{border:2px solid #d8b45a77;border-radius:12px;padding:12px;background:#23452bcc;cursor:pointer;text-align:left;position:relative}.fighter:hover,.fighter.sel,.crate:hover{transform:translateY(-3px);border-color:#fff0a8;outline:3px solid #7ad08c}.portrait{height:92px;border-radius:8px;border:2px solid #d8b45a88;margin-bottom:8px;overflow:hidden;background:#102413}.portrait canvas{width:100%;height:92px}.fighter b,.crate b{display:block;color:#fff2a6;font-size:17px}.fighter span,.crate span{display:block;color:#ddd;font:12px Arial;margin-top:4px;text-transform:none}.skinselect{width:100%;margin-top:8px;background:#06140d;color:#fff;border:1px solid #d8b45a;border-radius:6px;padding:6px;font:12px Arial}.info{display:none;position:absolute;left:8px;right:8px;bottom:8px;background:#050008ee;border:2px solid #f8d96a;border-radius:8px;padding:8px;z-index:2}.fighter:hover .info{display:block}button{border:2px solid #fff0b6;border-radius:12px;padding:16px 28px;margin:8px;font-size:22px;font-weight:900;cursor:pointer;color:#1d1308;background:linear-gradient(#fff0b6,#c88a2a);font-family:Georgia,"Times New Roman",serif;text-transform:uppercase;letter-spacing:1px}button:disabled{opacity:.45;cursor:not-allowed}button:active{transform:translateY(3px)}.row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px}.diff.sel{outline:4px solid #7ad08c}.join{border:2px solid #d8b45a;border-radius:8px;background:#102413;color:#fff;padding:14px;width:110px;font-size:20px;text-transform:uppercase}.status{font:14px Arial;color:#d8d7ff;align-self:center}.controls{display:none;margin:14px auto 0;grid-template-columns:repeat(2,1fr);gap:10px;text-align:left;max-width:760px;font:14px Arial}.controls.show{display:grid}.controls div{background:#ffffff14;border:1px solid #ffffff24;padding:10px;border-radius:8px}#shop{display:none}.odds{font:13px Arial;color:#e7d9b7;line-height:1.45}.result{min-height:30px;color:#fff2a6;font:900 18px Arial}#hud{position:absolute;left:18px;right:18px;top:14px;display:none;gap:12px;align-items:center}.stack{flex:1}.barwrap{height:28px;border:3px solid white;background:#2b1622;border-radius:10px;overflow:hidden}.superwrap{height:12px;margin-top:7px;border:2px solid #d8b45a;background:#050008;border-radius:6px;overflow:hidden}.bar{height:100%;width:100%;background:linear-gradient(90deg,#3bd46d,#d7ff7a)}.super{height:100%;width:0;background:linear-gradient(90deg,#7ad08c,#f5d889,#fff2b6)}#timer{min-width:72px;text-align:center;font-size:30px;font-weight:900;color:#f8d96a}.labels{position:absolute;top:50px;left:20px;right:20px;display:none;justify-content:space-between;font-weight:900;color:#f5d889}.pop{position:absolute;left:50%;top:88px;transform:translateX(-50%);display:none;color:#fff2a6;font-size:24px}.msg{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;font-size:clamp(38px,8vw,88px);font-weight:900;color:#f8d96a;background:#0008;pointer-events:auto}.loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;pointer-events:auto;background:#07140cee}.loadbox{border:4px ridge #d8b45a;border-radius:18px;background:#102413ee;padding:34px}.seed{font-size:clamp(42px,8vw,92px);letter-spacing:8px;color:#fff2a7}.hint{font:18px Georgia;color:#e7d9b7;text-transform:none}@media(max-width:760px){.fighters,.shopgrid{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}}</style>
+<style>#storyCreate{display:none}.storyform{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:12px;text-align:left;margin:16px 0}.storyform label{background:#ffffff14;border:1px solid #ffffff24;border-radius:8px;padding:10px;font:14px Arial}.storyform input,.storyform select{width:100%;margin-top:6px;padding:8px;background:#06140d;color:#fff;border:1px solid #d8b45a;border-radius:6px}.storyHud{position:absolute;left:18px;right:18px;bottom:18px;display:none;pointer-events:none;background:#050008dd;border:2px solid #d8b45a;border-radius:10px;padding:12px;color:#fff2a6;font:18px Georgia}.storyMini{position:absolute;right:18px;top:18px;display:none;pointer-events:none;background:#050008dd;border:2px solid #d8b45a;border-radius:10px;padding:10px;color:#fff;font:14px Arial}.storyMenuBtn{position:absolute;left:18px;top:18px;display:none;pointer-events:auto;z-index:20;margin:0;padding:9px 13px;border-radius:8px;font-size:14px;letter-spacing:0}.stamwrap{height:8px;margin-top:5px;border:2px solid #7ad08c;background:#050008;border-radius:6px;overflow:hidden}.stam{height:100%;width:100%;background:linear-gradient(90deg,#38d876,#d8ff7a)}@media(max-width:760px){.storyform{grid-template-columns:1fr}}</style>
+<style>.skinbar{display:grid;grid-template-columns:36px 1fr 36px;gap:6px;align-items:center;margin-top:8px}.skinbar button{margin:0;padding:6px 0;font-size:16px;border-radius:7px}.skinselect{margin-top:0}.skinlabel{display:block;color:#fff2a6!important;font:12px Arial;margin-top:6px}.fighter .info{top:8px;bottom:auto;pointer-events:none}.reveal{margin:10px auto 14px;max-width:460px;border:3px ridge #d8b45a;border-radius:12px;background:#050008;padding:14px;text-align:center;overflow:hidden}.reveal canvas{width:220px;height:140px;max-width:80%;background:#102413;border:2px solid #d8b45a88;border-radius:8px}.revealTitle{color:#fff2a7;font:900 20px Georgia;margin:8px 0 4px}.revealText{color:#e7d9b7;font:14px Arial}.revealSpin{animation:revealPulse .18s infinite alternate}.revealLegendary{animation:revealPop .9s ease-out}@keyframes revealPulse{from{transform:scale(.98);filter:brightness(.8)}to{transform:scale(1.03);filter:brightness(1.35)}}@keyframes revealPop{0%{transform:scale(.72);filter:brightness(2)}60%{transform:scale(1.08)}100%{transform:scale(1)}}</style>
 </head>
 <body>
 <canvas id="game"></canvas><div id="dangerFlash"></div>
@@ -14,10 +16,25 @@
     <div class="subtitle">Choose your champion. Fight the CPU or host a friend match.</div>
     <div id="coinText" class="wallet">Coins: 0</div>
     <div id="fighters" class="fighters"></div>
-    <button id="playBtn">PLAY</button><button id="shopBtn">SHOP</button><button id="controlsBtn">CONTROLS</button>
+    <button id="playBtn">PLAY</button><button id="storyBtn">STORY</button><button id="shopBtn">SHOP</button><button id="controlsBtn">CONTROLS</button>
     <div class="row"><button class="diff" data-d="easy">EASY</button><button class="diff sel" data-d="normal">NORMAL</button><button class="diff" data-d="hard">HARD</button><button class="diff" data-d="nightmare">NIGHTMARE</button></div>
     <div class="row"><button id="hostBtn">HOST</button><input id="codeInput" class="join" placeholder="CODE" maxlength="6"><button id="joinBtn">JOIN</button><span id="statusText" class="status"></span></div>
-    <div id="how" class="controls"><div><b>Arrow Keys / WASD</b><br>Move / jump</div><div><b>Z</b><br>Block / shield</div><div><b>V</b><br>Quick attack</div><div><b>X</b><br>Heavy attack</div><div><b>C</b><br>Signature move</div><div><b>Shift</b><br>Grab / throw when close</div><div><b>Space</b><br>Super move when rainbow bar is full</div></div>
+    <div id="how" class="controls"><div><b>Arrow Keys / WASD</b><br>Move / jump</div><div><b>Z</b><br>Block / shield</div><div><b>B</b><br>Counter / reflect</div><div><b>V</b><br>Quick attack</div><div><b>X</b><br>Heavy attack</div><div><b>C</b><br>Signature move</div><div><b>Shift</b><br>Grab / throw when close</div><div><b>Space</b><br>Super move when rainbow bar is full</div></div>
+  </div></div>
+  <div id="storyCreate" class="menu"><div class="card">
+    <h1>Story<br>Hero</h1>
+    <div class="subtitle">A corruption has swallowed the kingdoms. Build a wandering hero and begin in the forest.</div>
+    <div class="storyform">
+      <label>Name<input id="storyName" maxlength="16" value="Wanderer"></label>
+      <label>Weapon<select id="storyWeapon"><option value="sword">Sword</option><option value="shield">Shield</option><option value="staff">Staff</option><option value="wand">Wand</option><option value="dagger">Dagger</option><option value="claw">Claws</option><option value="flask">Flask</option></select></label>
+      <label>Armor Color<input id="storyColor" type="color" value="#7ad08c"></label>
+      <label>Magic Color<input id="storyAccent" type="color" value="#fff2a6"></label>
+      <label>Power<input id="storyAtk" type="number" min="0" max="4" value="2"></label>
+      <label>Defense<input id="storyDef" type="number" min="0" max="4" value="2"></label>
+      <label>Speed<input id="storySpd" type="number" min="0" max="4" value="2"></label>
+    </div>
+    <div id="storyPoints" class="hint">Spend up to 6 stat points.</div>
+    <button id="storyStartBtn">BEGIN STORY</button><button id="storyBackBtn">BACK</button>
   </div></div>
   <div id="shop" class="menu"><div class="card">
     <h1>Crate<br>Shop</h1>
@@ -27,8 +44,9 @@
     <div id="crates" class="shopgrid"></div>
     <button id="shopBackBtn">BACK</button>
   </div></div>
-  <div id="hud"><div class="stack"><div class="barwrap"><div id="p1bar" class="bar"></div></div><div class="superwrap"><div id="p1sup" class="super"></div></div></div><div id="timer">90</div><div class="stack"><div class="barwrap"><div id="p2bar" class="bar"></div></div><div class="superwrap"><div id="p2sup" class="super"></div></div></div></div>
+  <div id="hud"><div class="stack"><div class="barwrap"><div id="p1bar" class="bar"></div></div><div class="superwrap"><div id="p1sup" class="super"></div></div><div class="stamwrap"><div id="p1sta" class="stam"></div></div></div><div id="timer">90</div><div class="stack"><div class="barwrap"><div id="p2bar" class="bar"></div></div><div class="superwrap"><div id="p2sup" class="super"></div></div><div class="stamwrap"><div id="p2sta" class="stam"></div></div></div></div>
   <div id="labels" class="labels"><span id="p1name"></span><span id="p2name"></span></div><div id="pop" class="pop"></div><div id="msg" class="msg"></div>
+  <button id="storyMenuBtn" class="storyMenuBtn">MENU</button><div id="storyHud" class="storyHud"></div><div id="storyMini" class="storyMini"></div>
   <div id="loading" class="loading"><div class="loadbox"><h1>Waiting<br>For Challenger</h1><div class="hint">Give this 6-digit seed code to your friend:</div><div id="seedCode" class="seed">000000</div><div class="hint">They type it next to JOIN, then press JOIN.</div><button id="cancelHostBtn">BACK</button></div></div>
 </div>
 <script>
@@ -60,6 +78,10 @@ const els = {
     fighters: $('fighters'),
     crates: $('crates'),
     playBtn: $('playBtn'),
+    storyBtn: $('storyBtn'),
+    storyStartBtn: $('storyStartBtn'),
+    storyBackBtn: $('storyBackBtn'),
+    storyMenuBtn: $('storyMenuBtn'),
     shopBtn: $('shopBtn'),
     shopBackBtn: $('shopBackBtn'),
     controlsBtn: $('controlsBtn'),
@@ -71,11 +93,24 @@ const els = {
     shop: $('shop'),
     shopCoins: $('shopCoins'),
     crateResult: $('crateResult'),
+    storyCreate: $('storyCreate'),
+    storyName: $('storyName'),
+    storyWeapon: $('storyWeapon'),
+    storyColor: $('storyColor'),
+    storyAccent: $('storyAccent'),
+    storyAtk: $('storyAtk'),
+    storyDef: $('storyDef'),
+    storySpd: $('storySpd'),
+    storyPoints: $('storyPoints'),
+    storyHud: $('storyHud'),
+    storyMini: $('storyMini'),
     how: $('how'),
     p1bar: $('p1bar'),
     p2bar: $('p2bar'),
     p1sup: $('p1sup'),
     p2sup: $('p2sup'),
+    p1sta: $('p1sta'),
+    p2sta: $('p2sta'),
     timer: $('timer'),
     p1name: $('p1name'),
     p2name: $('p2name'),
@@ -152,6 +187,31 @@ const SAVE_KEY = 'ww-save-v3',
     };
 
 function skinList(ch) {
+    if (ch.custom || ch.id === 100) {
+        let base = save.storyHero || ch;
+        return [
+            {
+                id: ch.id + '-hero-inverted',
+                charId: ch.id,
+                name: 'Inverted ' + ch.name,
+                rarity: 'rare',
+                color: base.accent || ch.accent,
+                accent: base.color || ch.color,
+                ultColor: base.color || ch.color,
+                bonus: 'Reverse aura'
+            },
+            {
+                id: ch.id + '-hero-gold',
+                charId: ch.id,
+                name: 'Golden ' + ch.name,
+                rarity: 'legendary',
+                color: '#d8b45a',
+                accent: '#fff2a7',
+                ultColor: '#fff2a7',
+                bonus: 'Hero prestige'
+            }
+        ];
+    }
     let sets = ['common', 'uncommon', 'rare', 'legendary'];
     return sets.map((r, i) => {
         let p = SKIN_PALETTES[r][ch.id % SKIN_PALETTES[r].length];
@@ -171,16 +231,49 @@ function skinList(ch) {
 function loadSave() {
     try {
         let s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
-        return { coins: Number.isFinite(s.coins) ? s.coins : 0, skins: s.skins || {}, equipped: s.equipped || {} };
+        return { coins: Number.isFinite(s.coins) ? s.coins : 0, skins: s.skins || {}, equipped: s.equipped || {}, storyHero: s.storyHero || null, storyClear: !!s.storyClear };
     } catch (e) {
-        return { coins: 0, skins: {}, equipped: {} };
+        return { coins: 0, skins: {}, equipped: {}, storyHero: null, storyClear: false };
     }
 }
 
 let save = loadSave();
 
+function customCharFromSave() {
+    if (!save.storyHero || !save.storyClear) return null;
+    let h = save.storyHero;
+    return {
+        id: 100,
+        name: h.name || 'Wanderer',
+        title: 'Kingdom Liberator',
+        color: h.color || '#7ad08c',
+        accent: h.accent || '#fff2a6',
+        weapon: h.weapon + ' of freedom',
+        hp: 108 + (h.def || 0) * 7,
+        speed: 260 + (h.spd || 0) * 18,
+        kind: h.weapon || 'sword',
+        atk: 1 + (h.atk || 0) * .08,
+        def: 1 + (h.def || 0) * .08,
+        spd: 1 + (h.spd || 0) * .06,
+        realm: 'Restored Road',
+        custom: 1
+    };
+}
+
+function syncCustomRoster() {
+    let has = chars.some(c => c.id === 100), ch = customCharFromSave();
+    if (ch && !has) chars.push(ch);
+    else if (ch) {
+        let i = chars.findIndex(c => c.id === 100);
+        if (i >= 0) chars[i] = ch;
+    }
+}
+
+syncCustomRoster();
+
 function saveGame() {
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+    syncCustomRoster();
     updateWallet();
 }
 
@@ -203,7 +296,26 @@ function skinnedChar(ch) {
     return s ? Object.assign({}, ch, { color: s.color, accent: s.accent, skin: s }) : ch;
 }
 
+function skinChoices(ch) {
+    return [null].concat(ownedSkins(ch));
+}
+
+function equipSkinStep(ch, dir) {
+    let choices = skinChoices(ch),
+        current = save.equipped[ch.id] || '',
+        idx = choices.findIndex(s => (s ? s.id : '') === current);
+    if (idx < 0) idx = 0;
+    idx = (idx + dir + choices.length) % choices.length;
+    save.equipped[ch.id] = choices[idx] ? choices[idx].id : '';
+    saveGame();
+    makeCards();
+}
+
 function pickSkin(ch) {
+    if (ch.custom || ch.id === 100) {
+        let list = skinList(ch);
+        return Math.random() < .74 ? list[0] : list[1];
+    }
     let roll = Math.random() * 100, total = 0, rarity = 'common';
     for (let [r, odds] of RARITY_ODDS) {
         total += odds;
@@ -232,7 +344,107 @@ let sel = 1,
     endTimer = 0,
     net = { role: 'cpu', ch: null, keys: {} },
     G = { run: 0, over: 0, time: 90, shake: 0, parts: [], shots: [], fx: [] },
-    comboBuf = [];
+    comboBuf = [],
+    crateOpening = 0;
+
+let story = {
+    active: 0,
+    boss: 0,
+    stage: 0,
+    quest: 0,
+    x: 0,
+    y: 0,
+    camX: 0,
+    camY: 0,
+    inTown: 0,
+    town: null,
+    talk: 0,
+    quiz: null,
+    hero: null,
+    text: ''
+};
+
+const STORY_BOSS_COUNT = 20;
+const STORY_WORLD_W = 5200, STORY_WORLD_H = 3200;
+const FINAL_QUIZ = [
+    { q: 'Where does the journey begin?', a: ['Lantern Hollow in the southern forest', 'The Storm Tower', 'The Tidal Palace'], correct: 0 },
+    { q: 'What does the central shrine do?', a: ['Opens boss trials after town quests', 'Sells every crate', 'Changes your weapon for free'], correct: 0 },
+    { q: 'Which town is known for tide locks?', a: ['Tidepost', 'Cryptwatch', 'Ashford'], correct: 0 },
+    { q: 'What is Rootbell known for?', a: ['Root songs', 'Acid bottles', 'Dragon scales'], correct: 0 },
+    { q: 'Who waits at Last Hearth?', a: ['Old Witness', 'Banner Keeper', 'Bottle Auntie'], correct: 0 },
+    { q: 'What happened to the playable heroes in story mode?', a: ['Corruption turned them into bosses', 'They opened a crate shop', 'They left the kingdoms forever'], correct: 0 }
+];
+const STORY_CHAPTERS = [
+    ['Forest Road', 'Gather resin for the lantern maker. The first gate listens when the forest is helped.'],
+    ['Solar Keep', 'Return stolen sun banners so the keep remembers daylight.'],
+    ['Bone Crypt', 'Lay three nameless bones beneath the village shrine.'],
+    ['Cinder Spire', 'Cool the ash wells before Emberlyn can be reached.'],
+    ['Night Court', 'Light the moon mirrors and expose the false shadows.'],
+    ['Frozen Gate', 'Warm the watchfires so Boreas stops sealing the road.'],
+    ['Elderwood', 'Free the trapped root spirits from corruption vines.'],
+    ['Storm Tower', 'Ground the tower rods before lightning splits the path.'],
+    ['Rune Dojo', 'Restore the broken rune stones in the training yard.'],
+    ['Goblin Lab', 'Find clean water to thin the acid fog.'],
+    ['Star Temple', 'Place village wishes beneath the oracle sky.'],
+    ['Iron Hall', 'Repair the old bridge with dwarf-forged rivets.'],
+    ['Dragon Aerie', 'Return a scale to the empty nest.'],
+    ['Icy Bastion', 'Carry a thaw bell through the white wind.'],
+    ['Infernal Throne', 'Break the demon braziers one by one.'],
+    ['Faerie Ring', 'Trade kindness for a hidden circle key.'],
+    ['Plague Cathedral', 'Ring the quiet bell to scatter the sickness.'],
+    ['Sky Realm', 'Raise the fallen wind flags.'],
+    ['Shadow Abyss', 'Walk the black road without striking first.'],
+    ['Tidal Palace', 'Open the tide locks and drain the rot.'],
+    ['Heart of Rot', 'The kingdoms are awake. Enter the wound beneath them.']
+];
+const STORY_TOWNS = [
+    { name: 'Lantern Hollow', x: 2600, y: 2850, c: '#cfa85a', arch: 'forest', npc: 'Mira', line: 'Story mode is one open world. Start in the southern forest, follow roads to the center shrine, then branch to each kingdom town. If you fall, your journey is saved.' },
+    { name: 'Sunwell Market', x: 1980, y: 1280, c: '#f5d889', arch: 'solar', npc: 'Banner Keeper', line: 'A hero is not proven by blades alone. Restore our banners and daylight returns to the stones.' },
+    { name: 'Cryptwatch', x: 1380, y: 1120, c: '#b7ffb7', arch: 'crypt', npc: 'Quiet Mason', line: 'Names keep bones from becoming soldiers. Carry these names into the crypt wind.' },
+    { name: 'Ashford', x: 1050, y: 1620, c: '#d86a3d', arch: 'cinder', npc: 'Cinder Smith', line: 'The ash wells cough black fire. Cool them and Emberlyn may remember her name.' },
+    { name: 'Moonbridge', x: 1500, y: 2040, c: '#8f63ff', arch: 'night', npc: 'Mask Painter', line: 'The Night Court fears honest faces. Take this silver paint and reveal what hides.' },
+    { name: 'Frostwake', x: 1580, y: 700, c: '#bff6ff', arch: 'frost', npc: 'Watch Captain', line: 'Keep the watchfires alive. Boreas listens to warmth even through corruption.' },
+    { name: 'Rootbell', x: 2320, y: 820, c: '#73bf45', arch: 'root', npc: 'Root Singer', line: 'The oldest trees still hear us. Ring the root bell and Thornmaw may stop raging.' },
+    { name: 'Highrod', x: 3020, y: 780, c: '#fff36b', arch: 'storm', npc: 'Storm Minder', line: 'Count the seconds between thunder and fear. Ground the rods before Vaelor strikes.' },
+    { name: 'Ink Dojo', x: 3720, y: 1080, c: '#f7f7ff', arch: 'dojo', npc: 'Rune Scribe', line: 'A rune is a promise with corners. Copy this one and Kairo will hesitate.' },
+    { name: 'Fizzwick', x: 4100, y: 1600, c: '#b4e060', arch: 'lab', npc: 'Bottle Auntie', line: 'Goblins respect good labels. Swap the poison marks and Poxley will confuse himself.' },
+    { name: 'Starfall Village', x: 3270, y: 1320, c: '#d7a6ff', arch: 'star', npc: 'Oracle Child', line: 'Every wish is a tiny star. Leave one here and Serapha will see through the dark.' },
+    { name: 'Anvil Rest', x: 2200, y: 1700, c: '#ffcc7a', arch: 'iron', npc: 'Bridgewright', line: 'Iron remembers every footstep. Set the rivets and Grum will hear the hall again.' },
+    { name: 'Scale Roost', x: 3850, y: 2150, c: '#ffc163', arch: 'dragon', npc: 'Nest Keeper', line: 'Dragons do not forget gifts. Return this scale and Sythra may look down.' },
+    { name: 'Snowbell', x: 930, y: 780, c: '#e0f6ff', arch: 'ice', npc: 'Bell Carrier', line: 'Carry the thaw bell carefully. Lysandra froze tears before she froze kingdoms.' },
+    { name: 'Coal Chapel', x: 760, y: 2200, c: '#ff4444', arch: 'infernal', npc: 'Ash Monk', line: 'Break the demon braziers, but do not feed them anger.' },
+    { name: 'Ringroot Fair', x: 2500, y: 2220, c: '#fffacd', arch: 'faerie', npc: 'Tiny Herald', line: 'Pip listens for laughter. Trade kindness and the circle opens.' },
+    { name: 'Mournminster', x: 1260, y: 2520, c: '#9d4edd', arch: 'plague', npc: 'Bell Nun', line: 'The plague cathedral is quiet because it forgot mercy. Ring this bell.' },
+    { name: 'Cloudhook', x: 3050, y: 2420, c: '#00ffff', arch: 'sky', npc: 'Kitewright', line: 'Raise the fallen wind flags and Ravenna cannot hide in the storm.' },
+    { name: 'Umbra Camp', x: 4300, y: 2450, c: '#b19cd9', arch: 'shadow', npc: 'Blind Scout', line: 'Walk the black road without striking first. Talon respects restraint.' },
+    { name: 'Tidepost', x: 4550, y: 1050, c: '#40e0d0', arch: 'tide', npc: 'Lock Tender', line: 'Open the tide locks. The palace cannot rot if the sea can breathe.' },
+    { name: 'Last Hearth', x: 2600, y: 360, c: '#ff1744', arch: 'rot', npc: 'Old Witness', line: 'All roads lead below now. The final rot has no hero inside it, only hunger.' }
+];
+const STORY_HUB = { x: 2600, y: 1540 };
+const STORY_ROUTE_PARTNERS = [1, 6, 11, 15, 2, 10, 5, 18, 7, 19, 16, 3, 17, 8, 4, 12, 13, 9, 14, 20];
+const STORY_BIOMES = [
+    ['Forest Road', '#14331d', '#5f9d4f', '#6d4327'],
+    ['Solar Fields', '#5c4a1d', '#d8b45a', '#8a5c22'],
+    ['Bone Marsh', '#253329', '#b7ffb7', '#58604f'],
+    ['Cinder Badlands', '#3a1710', '#ff7043', '#6d2b1d'],
+    ['Night Court', '#171329', '#8f63ff', '#231342'],
+    ['Frost Gate', '#173548', '#bff6ff', '#6d8fa3'],
+    ['Elderwood', '#183d1b', '#73bf45', '#4f2f1b'],
+    ['Storm Peaks', '#24384a', '#fff36b', '#3c4650'],
+    ['Rune Dojo', '#3a2430', '#ff5d7a', '#4b2f35'],
+    ['Goblin Lablands', '#2c3c1a', '#b4e060', '#5c6d2a'],
+    ['Star Temple', '#2a1c45', '#d7a6ff', '#3d2f5f'],
+    ['Iron Hall', '#3b3228', '#ffcc7a', '#5d5144'],
+    ['Dragon Aerie', '#431a13', '#ffc163', '#6b2b22'],
+    ['Icy Bastion', '#183f46', '#e0f6ff', '#6c99a2'],
+    ['Infernal Throne', '#481111', '#ff4444', '#6c1d1d'],
+    ['Faerie Ring', '#3f254b', '#fffacd', '#684c72'],
+    ['Plague Cathedral', '#21172d', '#9d4edd', '#3d2d45'],
+    ['Sky Realm', '#1e4f6b', '#00ffff', '#476b7a'],
+    ['Shadow Abyss', '#090912', '#b19cd9', '#191525'],
+    ['Tidal Palace', '#064750', '#40e0d0', '#1d6770'],
+    ['Heart of Rot', '#25070d', '#ff1744', '#050008']
+];
 
 const SUPER_START = 0,
     SUPER_GAIN = 1.05,
@@ -254,12 +466,30 @@ const W = () => innerWidth,
 const MELEE_KINDS = ['sword', 'shield', 'dagger', 'claw'];
 const isMelee = f => MELEE_KINDS.includes(f.ch.kind);
 const ultGainRate = f => f && f.ch && f.ch.name === 'Kael' ? .72 : 1;
+function shadeRect(g, x, y, w, h, c, hi = '#ffffff55', lo = '#00000066') {
+    let gr = g.createLinearGradient(x, y, x + w, y + h);
+    gr.addColorStop(0, hi);
+    gr.addColorStop(.22, c);
+    gr.addColorStop(1, lo);
+    g.fillStyle = gr;
+    g.fillRect(x, y, w, h);
+}
+function shadeCircle(g, x, y, r, c, hi = '#ffffff55', lo = '#00000066') {
+    let gr = g.createRadialGradient(x - r * .35, y - r * .45, r * .12, x, y, r);
+    gr.addColorStop(0, hi);
+    gr.addColorStop(.3, c);
+    gr.addColorStop(1, lo);
+    g.fillStyle = gr;
+    g.beginPath();
+    g.arc(x, y, safeRadius(r), 0, Math.PI * 2);
+    g.fill();
+}
 function meleeProfile(f) {
     return {
-        sword: { lightReach: 58, heavyReach: 88, lightDmg: 9, heavyDmg: 17, lightCd: .32, heavyCd: .58, lunge: 150, active: .22, knock: 360 },
-        shield: { lightReach: 52, heavyReach: 76, lightDmg: 8, heavyDmg: 15, lightCd: .34, heavyCd: .62, lunge: 110, active: .23, knock: 430 },
-        dagger: { lightReach: 50, heavyReach: 72, lightDmg: 7, heavyDmg: 13, lightCd: .26, heavyCd: .46, lunge: 230, active: .2, knock: 250 },
-        claw: { lightReach: 54, heavyReach: 80, lightDmg: 9, heavyDmg: 16, lightCd: .29, heavyCd: .52, lunge: 190, active: .22, knock: 320 }
+        sword: { lightReach: 58, heavyReach: 88, lightDmg: 8, heavyDmg: 16, lightCd: .32, heavyCd: .58, lunge: 150, active: .22, knock: 330 },
+        shield: { lightReach: 52, heavyReach: 76, lightDmg: 7, heavyDmg: 14, lightCd: .34, heavyCd: .62, lunge: 110, active: .23, knock: 395 },
+        dagger: { lightReach: 50, heavyReach: 72, lightDmg: 6, heavyDmg: 12, lightCd: .26, heavyCd: .46, lunge: 230, active: .2, knock: 230 },
+        claw: { lightReach: 54, heavyReach: 80, lightDmg: 8, heavyDmg: 15, lightCd: .29, heavyCd: .52, lunge: 190, active: .22, knock: 295 }
     }[f.ch.kind];
 }
 // ============================================================================
@@ -282,9 +512,10 @@ function fighter(x, ch, enemy = 0) {
         dir: enemy ? -1 : 1,
         hp, maxHp: hp,
         sup: SUPER_START,
+        sta: 100, maxSta: 100, tired: 0,
         ch, enemy,
         on: 1, cd: 0, blk: 0,
-        atk: null, ai: 0,
+        atk: null, ai: 0, counter: 0, invuln: 0,
         grab: null, heldBy: null
     };
 }
@@ -347,12 +578,12 @@ function drawModel(g, f, x, y, s = 1, flip = 0) {
     else if (ch.name === 'Azura') { g.fillStyle = '#40e0d0'; g.fillRect(9,2,40,9); g.fillRect(15,-8,7,13); g.fillRect(26,-14,7,19); g.fillRect(37,-8,7,13); }
     else { g.fillStyle = ch.accent; g.fillRect(10,4,38,9); }
 
-    g.fillStyle = skin; g.fillRect(15,10,28,25);
+    shadeRect(g, 15, 10, 28, 25, skin, '#ffe0c2', '#5b2e1e');
     g.fillStyle = '#050008'; g.fillRect(19,19,8,6); g.fillRect(32,19,8,6);
     g.fillStyle = ch.accent; g.fillRect(20,20,6,4); g.fillRect(33,20,6,4);
     g.fillStyle = '#fff8'; g.fillRect(21,20,2,1); g.fillRect(34,20,2,1);
     g.fillStyle = '#0008'; g.fillRect(17,31,24,4);
-    g.fillStyle = skin; g.fillRect(1+(f.atk?atk*.5:0),49+arm,12,35); g.fillRect(45+armReach,49-arm-armLift,12,35+armLift*.25); g.fillStyle = ch.accent; g.fillRect(0+(f.atk?atk*.5:0),77+arm,14,7); g.fillRect(44+armReach,77-arm-armLift,14,7); g.fillStyle = '#0007'; g.fillRect(2+(f.atk?atk*.5:0),80+arm,10,4); g.fillRect(46+armReach,80-arm-armLift,10,4);
+    shadeRect(g, 1+(f.atk?atk*.5:0), 49+arm, 12, 35, skin, '#ffe0c2', '#5b2e1e'); shadeRect(g, 45+armReach, 49-arm-armLift, 12, 35+armLift*.25, skin, '#ffe0c2', '#5b2e1e'); g.fillStyle = ch.accent; g.fillRect(0+(f.atk?atk*.5:0),77+arm,14,7); g.fillRect(44+armReach,77-arm-armLift,14,7); g.fillStyle = '#0007'; g.fillRect(2+(f.atk?atk*.5:0),80+arm,10,4); g.fillRect(46+armReach,80-arm-armLift,10,4);
     if (jump) { g.fillStyle = '#fff2a7'; g.fillRect(10,120,38,6); g.fillStyle = '#7ad08c'; g.fillRect(16,126,26,3); }
     if (f.atk) { g.globalAlpha = .28; g.fillStyle = '#fff2a7'; g.fillRect(42+atk,42,32,48); g.globalAlpha = 1; }
 
@@ -414,12 +645,14 @@ function makeCards() {
         let d = document.createElement('div');
         d.className = 'fighter' + (i === sel ? ' sel' : '');
         d.onclick = () => { sel = i; makeCards(); };
-        let skinOptions = ['<option value="">Base</option>'].concat(owned.map(s => `<option value="${s.id}" ${save.equipped[ch.id] === s.id ? 'selected' : ''}>${s.name} - ${s.rarity}</option>`)).join('');
+        let currentSkin = equippedSkin(ch),
+            skinOptions = ['<option value="">Base</option>'].concat(owned.map(s => `<option value="${s.id}" ${save.equipped[ch.id] === s.id ? 'selected' : ''}>${s.name} - ${s.rarity}</option>`)).join('');
         d.innerHTML = `
             <div class="portrait"><canvas width="160" height="92"></canvas></div>
             <b>${shown.name}</b>
             <span>${shown.skin ? shown.skin.name : ch.title}</span>
-            <select class="skinselect">${skinOptions}</select>
+            <span class="skinlabel">Skin: ${currentSkin ? currentSkin.name : 'Base'}</span>
+            <div class="skinbar"><button class="skinprev" title="Previous skin">&lt;</button><select class="skinselect">${skinOptions}</select><button class="skinnext" title="Next skin">&gt;</button></div>
             <div class="info">
                 <b>${ch.name}</b>
                 <span>${ch.title}</span>
@@ -436,6 +669,8 @@ function makeCards() {
             makeCards();
         };
         pick.onclick = e => e.stopPropagation();
+        d.querySelector('.skinprev').onclick = e => { e.stopPropagation(); equipSkinStep(ch, -1); };
+        d.querySelector('.skinnext').onclick = e => { e.stopPropagation(); equipSkinStep(ch, 1); };
 
         let c = d.querySelector('canvas'),
             g = c.getContext('2d');
@@ -453,7 +688,11 @@ function makeShop() {
     chars.forEach(ch => {
         let owned = ownedSkins(ch), d = document.createElement('div');
         d.className = 'crate';
-        d.innerHTML = `<b>${ch.name} Crate</b><span>${owned.length}/4 skins unlocked</span><span>Cost: ${CRATE_COST} coins</span><div class="odds">Common 55% | Uncommon 28%<br>Rare 13% | Legendary 4%</div><button ${save.coins < CRATE_COST ? 'disabled' : ''}>OPEN</button>`;
+        let hero = ch.custom || ch.id === 100,
+            total = skinList(ch).length,
+            title = hero ? 'HERO Crate' : ch.name + ' Crate',
+            odds = hero ? 'Inverted 74% | Full Gold 26%' : 'Common 55% | Uncommon 28%<br>Rare 13% | Legendary 4%';
+        d.innerHTML = `<b>${title}</b><span>${owned.length}/${total} skins unlocked</span><span>${hero ? ch.name + ' only' : 'Cost: ' + CRATE_COST + ' coins'}</span><span>Cost: ${CRATE_COST} coins</span><div class="odds">${odds}</div><button ${save.coins < CRATE_COST ? 'disabled' : ''}>OPEN</button>`;
         d.querySelector('button').onclick = e => { e.stopPropagation(); openCrate(ch); };
         els.crates.appendChild(d);
     });
@@ -467,24 +706,230 @@ function openShop() {
     makeShop();
 }
 
+function drawRevealCanvas(canvas, ch, skin) {
+    if (!canvas) return;
+    let g = canvas.getContext('2d'),
+        shown = skin ? Object.assign({}, ch, { color: skin.color, accent: skin.accent, skin }) : ch;
+    g.clearRect(0, 0, canvas.width, canvas.height);
+    let bg = g.createLinearGradient(0, 0, canvas.width, canvas.height);
+    bg.addColorStop(0, '#102413');
+    bg.addColorStop(1, skin && skin.rarity === 'legendary' ? '#4a3608' : '#050008');
+    g.fillStyle = bg;
+    g.fillRect(0, 0, canvas.width, canvas.height);
+    g.globalAlpha = .25;
+    g.fillStyle = skin ? skin.accent : ch.accent;
+    for (let i = 0; i < 8; i++) {
+        g.beginPath();
+        g.arc(30 + i * 28, 28 + Math.sin(i) * 16, safeRadius(16 + i % 3 * 8), 0, Math.PI * 2);
+        g.fill();
+    }
+    g.globalAlpha = 1;
+    g.save();
+    g.translate(canvas.width / 2, 20);
+    drawModel(g, { ch: shown, blk: 0, atk: 0, x: 0, y: 0, on: 1, vx: 0 }, -30, 0, 1);
+    g.restore();
+}
+
+function showCrateReveal(ch, skin, duplicate) {
+    let rarity = skin.rarity.toUpperCase(),
+        msg = duplicate ? 'Duplicate ' + skin.name + ' - refunded ' + DUPLICATE_REFUND + ' coins.' : 'Unlocked ' + rarity + ': ' + skin.name + (skin.bonus ? ' | ' + skin.bonus : '');
+    els.crateResult.innerHTML = `<div class="reveal ${skin.rarity === 'legendary' ? 'revealLegendary' : ''}"><canvas width="220" height="140"></canvas><div class="revealTitle">${duplicate ? 'Duplicate' : rarity + ' Skin'}</div><div class="revealText">${msg}</div></div>`;
+    drawRevealCanvas(els.crateResult.querySelector('canvas'), ch, skin);
+}
+
 function openCrate(ch) {
+    if (crateOpening) return;
     if (save.coins < CRATE_COST) {
         els.crateResult.textContent = 'Not enough coins.';
         return;
     }
+    crateOpening = 1;
     save.coins -= CRATE_COST;
     let s = pickSkin(ch), duplicate = !!save.skins[s.id];
-    if (duplicate) {
-        save.coins += DUPLICATE_REFUND;
-        els.crateResult.textContent = 'Duplicate ' + s.name + ' - refunded ' + DUPLICATE_REFUND + ' coins.';
+    makeShop();
+    els.crateResult.innerHTML = `<div class="reveal revealSpin"><canvas width="220" height="140"></canvas><div class="revealTitle">Opening ${ch.name} Crate...</div><div class="revealText">Rolling for a skin</div></div>`;
+    let canvas = els.crateResult.querySelector('canvas'),
+        roll = skinList(ch),
+        i = 0,
+        anim = setInterval(() => {
+            drawRevealCanvas(canvas, ch, roll[i % roll.length]);
+            i++;
+        }, 110);
+    setTimeout(() => {
+        clearInterval(anim);
+        if (duplicate) save.coins += DUPLICATE_REFUND;
+        else {
+            save.skins[s.id] = 1;
+            save.equipped[ch.id] = s.id;
+        }
+        saveGame();
+        showCrateReveal(ch, s, duplicate);
+        makeShop();
+        makeCards();
+        crateOpening = 0;
+    }, 1150);
+}
+
+function storyHeroFromForm() {
+    let atk = cl(parseInt(els.storyAtk.value) || 0, 0, 4),
+        def = cl(parseInt(els.storyDef.value) || 0, 0, 4),
+        spd = cl(parseInt(els.storySpd.value) || 0, 0, 4),
+        total = atk + def + spd;
+    if (total > 6) {
+        let scale = 6 / total;
+        atk = Math.floor(atk * scale);
+        def = Math.floor(def * scale);
+        spd = 6 - atk - def;
+    }
+    return {
+        name: (els.storyName.value || 'Wanderer').slice(0, 16),
+        weapon: els.storyWeapon.value,
+        color: els.storyColor.value,
+        accent: els.storyAccent.value,
+        atk, def, spd
+    };
+}
+
+function storyHeroChar() {
+    let h = story.hero || save.storyHero || storyHeroFromForm();
+    return {
+        id: 99,
+        name: h.name || 'Wanderer',
+        title: 'Wandering Hope',
+        color: h.color || '#7ad08c',
+        accent: h.accent || '#fff2a6',
+        weapon: h.weapon + ' of the road',
+        hp: 105 + h.def * 8,
+        speed: 258 + h.spd * 18,
+        kind: h.weapon || 'sword',
+        atk: 1 + h.atk * .08,
+        def: 1 + h.def * .08,
+        spd: 1 + h.spd * .06,
+        realm: 'Forest Road',
+        custom: 1
+    };
+}
+
+function chapterText() {
+    let c = STORY_CHAPTERS[Math.min(story.stage, STORY_CHAPTERS.length - 1)];
+    return c[0] + ': ' + c[1];
+}
+
+function openStoryCreate() {
+    els.menu.style.display = 'none';
+    els.storyCreate.style.display = 'flex';
+    updateStoryPoints();
+}
+
+function updateStoryPoints() {
+    let total = ['storyAtk','storyDef','storySpd'].reduce((n,id)=>n+(parseInt(els[id].value)||0),0);
+    els.storyPoints.textContent = 'Spend up to 6 stat points. Points left: ' + Math.max(0, 6 - total);
+}
+
+function beginStory() {
+    story.hero = storyHeroFromForm();
+    save.storyHero = story.hero;
+    saveGame();
+    story.active = 1;
+    story.boss = 0;
+    story.stage = save.storyStage || 0;
+    story.quest = save.storyQuest || 0;
+    let newMap = save.storyMapVersion !== 2;
+    story.x = newMap ? 2600 : save.storyX || 2600;
+    story.y = newMap ? 3000 : save.storyY || 3000;
+    save.storyMapVersion = 2;
+    save.storyX = story.x;
+    save.storyY = story.y;
+    saveGame();
+    story.inTown = 0;
+    story.town = null;
+    story.talk = 0;
+    story.text = chapterText();
+    els.storyCreate.style.display = els.menu.style.display = els.shop.style.display = 'none';
+    els.hud.style.display = els.labels.style.display = els.msg.style.display = els.pop.style.display = 'none';
+    els.storyHud.style.display = els.storyMini.style.display = els.storyMenuBtn.style.display = 'block';
+    G.run = 1; G.over = 0;
+    cancelAnimationFrame(raf);
+    last = performance.now();
+    raf = requestAnimationFrame(loop);
+    playMusic('menu');
+}
+
+function storyBossChar() {
+    if (story.stage >= STORY_BOSS_COUNT) return { id: 101, name: 'The Corruption', title: 'Final Kingdom Rot', color: '#2a0710', accent: '#ff1744', weapon: 'crown of ruin', hp: 130, speed: 230, kind: 'claw', atk: 1.08, def: 1.05, spd: .85, realm: 'Heart of Rot', finalBoss: 1 };
+    let base = chars[story.stage];
+    return Object.assign({}, base, { color: '#231629', accent: '#ff1744', title: 'Corrupted ' + base.title, hp: base.hp + 8, speed: base.speed * .9, atk: Math.max(.9, base.atk - .08), def: Math.max(.85, base.def - .04), spd: Math.max(.65, base.spd - .08) });
+}
+
+function startStoryBoss() {
+    story.boss = 1;
+    net.role = 'story';
+    G = { run: 1, over: 0, time: 120, shake: 0, parts: [], shots: [], fx: [], storyBoss: 1, bossPhase: 0, bossWarn: null };
+    p1 = fighter(170, storyHeroChar());
+    p2 = fighter(W() - 240, storyBossChar(), 1);
+    p2.hp = p2.maxHp = Math.round(p2.maxHp * (p2.ch.finalBoss ? 1.25 : 1.28));
+    els.hud.style.display = els.labels.style.display = 'flex';
+    els.storyHud.style.display = els.storyMini.style.display = els.storyMenuBtn.style.display = 'none';
+    els.p1name.textContent = p1.ch.name + ' - Story Hero';
+    els.p2name.textContent = p2.ch.name + ' - Boss';
+    bars();
+    playMusic('battle');
+}
+
+function storyWin() {
+    endTimer = 0;
+    let final = p2.ch.finalBoss;
+    let reward = final ? 500 : 90 + Math.min(story.stage, 10) * 8;
+    save.coins += reward;
+    if (final) {
+        save.storyClear = true;
+        save.storyStage = story.stage;
+        save.storyX = story.x;
+        save.storyY = story.y;
+        story.text = 'The corruption is gone. Your original hero has joined the normal roster. The shop now has a HERO crate with inverted and full-gold skins.';
     } else {
-        save.skins[s.id] = 1;
-        save.equipped[ch.id] = s.id;
-        els.crateResult.textContent = 'Unlocked ' + s.rarity.toUpperCase() + ': ' + s.name + (s.bonus ? ' | ' + s.bonus : '');
+        story.stage++;
+        save.storyStage = story.stage;
+        save.storyQuest = story.quest = story.stage;
+        save.storyTaskStage = story.stage;
+        save.storyTaskStep = 0;
+        save.storyQuizPassed = false;
+        save.storyX = story.x;
+        save.storyY = story.y;
+        story.text = story.stage >= STORY_BOSS_COUNT ? 'All kingdoms are restored. The final road opens beneath the roots.' : 'Kingdom restored. ' + chapterText();
     }
     saveGame();
-    makeShop();
-    makeCards();
+    story.boss = 0;
+    story.active = 1;
+    net.role = 'cpu';
+    G = { run: 1, over: 0, time: 90, shake: 0, parts: [], shots: [], fx: [] };
+    els.hud.style.display = els.labels.style.display = els.msg.style.display = els.pop.style.display = 'none';
+    els.storyHud.style.display = els.storyMini.style.display = els.storyMenuBtn.style.display = 'block';
+    let next = STORY_TOWNS[Math.min(story.stage, STORY_TOWNS.length - 1)] || STORY_TOWNS[0];
+    story.x = next.x;
+    story.y = next.y + 210;
+    save.storyX = story.x;
+    save.storyY = story.y;
+    saveGame();
+    story.inTown = 0;
+    story.talk = 0;
+    playMusic('menu');
+}
+
+function storyLose() {
+    endTimer = 0;
+    story.boss = 0;
+    story.active = 1;
+    story.text = 'The boss pushed you back, but its corruption cracked. Learn the warning zones and try again.';
+    save.storyStage = story.stage;
+    save.storyQuest = story.quest;
+    save.storyX = story.x;
+    save.storyY = story.y;
+    saveGame();
+    net.role = 'cpu';
+    G = { run: 1, over: 0, time: 90, shake: 0, parts: [], shots: [], fx: [] };
+    els.hud.style.display = els.labels.style.display = els.msg.style.display = els.pop.style.display = 'none';
+    els.storyHud.style.display = els.storyMini.style.display = els.storyMenuBtn.style.display = 'block';
 }
 
 // Ensure fighters exist and are within bounds
@@ -501,6 +946,11 @@ function ensureFighters() {
 
     p1.on = p1.y + p1.h >= F() - 1;
     p2.on = p2.y + p2.h >= F() - 1;
+    for (let f of [p1, p2]) {
+        if (!Number.isFinite(f.maxSta)) f.maxSta = 100;
+        if (!Number.isFinite(f.sta)) f.sta = f.maxSta;
+        if (!Number.isFinite(f.tired)) f.tired = 0;
+    }
 }
 
 // Update health bars and super meters in HUD
@@ -510,6 +960,8 @@ function bars() {
     els.p2bar.style.width = cl(p2.hp / p2.maxHp * 100, 0, 100) + '%';
     els.p1sup.style.width = cl(p1.sup, 0, 100) + '%';
     els.p2sup.style.width = cl(p2.sup, 0, 100) + '%';
+    els.p1sta.style.width = cl(p1.sta / p1.maxSta * 100, 0, 100) + '%';
+    els.p2sta.style.width = cl(p2.sta / p2.maxSta * 100, 0, 100) + '%';
 }
 
 // Reset game state for a new match
@@ -548,7 +1000,7 @@ function begin() {
     playMusic('battle');
     els.menu.style.display = 'none';
     els.hud.style.display = els.labels.style.display = 'flex';
-    els.msg.style.display = els.pop.style.display = 'none';
+    els.msg.style.display = els.pop.style.display = els.storyMenuBtn.style.display = 'none';
     cancelAnimationFrame(raf);
     last = performance.now();
     raf = requestAnimationFrame(loop);
@@ -557,6 +1009,7 @@ function begin() {
 // Return to main menu
 function showMenu() {
     G.run = G.over = 0;
+    story.active = story.boss = 0;
     dangerMode = false;
     musicMode = 'menu';
     clearTimeout(endTimer);
@@ -567,7 +1020,7 @@ function showMenu() {
     if (net.ch) net.ch.close();
     net = { role: 'cpu', ch: null, keys: {} };
     els.menu.style.display = 'flex';
-    els.hud.style.display = els.labels.style.display = els.msg.style.display = els.pop.style.display = els.loading.style.display = els.shop.style.display = 'none';
+    els.hud.style.display = els.labels.style.display = els.msg.style.display = els.pop.style.display = els.loading.style.display = els.shop.style.display = els.storyCreate.style.display = els.storyHud.style.display = els.storyMini.style.display = els.storyMenuBtn.style.display = 'none';
     els.dangerFlash.style.borderColor = 'transparent';
     drawBg();
     makeCards();
@@ -643,18 +1096,19 @@ function inputKeys() {
     return {
         arrowleft: !!keys.arrowleft,
         arrowright: !!keys.arrowright,
-        arrowup: !!keys.arrowup
+        arrowup: !!keys.arrowup,
+        arrowdown: !!keys.arrowdown
     };
 }
 
 function moveKey(k) {
-    return { a: 'arrowleft', d: 'arrowright', w: 'arrowup' }[k] || k;
+    return { a: 'arrowleft', d: 'arrowright', w: 'arrowup', s: 'arrowdown' }[k] || k;
 }
 
 function setHeld(raw, down) {
     held[raw] = !!down;
     let k = moveKey(raw);
-    keys[k] = !!held[k] || (k === 'arrowleft' && !!held.a) || (k === 'arrowright' && !!held.d) || (k === 'arrowup' && !!held.w);
+    keys[k] = !!held[k] || (k === 'arrowleft' && !!held.a) || (k === 'arrowright' && !!held.d) || (k === 'arrowup' && !!held.w) || (k === 'arrowdown' && !!held.s);
     return k;
 }
 
@@ -662,7 +1116,7 @@ function fighterSnap(f) {
     if (!f) return null;
     return {
         x: f.x, y: f.y, w: f.w, h: f.h, vx: f.vx, vy: f.vy,
-        dir: f.dir, hp: f.hp, maxHp: f.maxHp, sup: f.sup,
+        dir: f.dir, hp: f.hp, maxHp: f.maxHp, sup: f.sup, sta: f.sta, maxSta: f.maxSta, tired: f.tired,
         ch: f.ch, enemy: f.enemy, on: f.on, cd: f.cd, blk: f.blk,
         atk: f.atk ? Object.assign({}, f.atk) : null, ai: f.ai,
         grab: f.grab ? Object.assign({}, f.grab) : null,
@@ -690,13 +1144,27 @@ function applyQueuedInput(f, queue) {
         }
         if (f.heldBy) continue;
         checkCombo(f, k);
-        if (k === 'z') { f.blk = f.ch.kind === 'shield' ? 1.05 : .75; f.cd = .12; }
+        if (k === 'z' && spendSta(f, 8)) { f.blk = f.ch.kind === 'shield' ? 1.05 : .75; f.cd = .12; }
+        if (k === 'b') counterMove(f);
         if (k === 'v') attack(f, 'light');
         if (k === 'x') attack(f, 'heavy');
         if (k === 'c') sigMove(f);
         if (k === 'shift') grab(f);
         if (k === ' ') superMove(f);
     }
+}
+
+function spendSta(f, n) {
+    if (!f) return false;
+    if (!Number.isFinite(f.sta)) f.sta = 100;
+    if (f.sta < n) {
+        f.tired = .7;
+        flash('Tired');
+        return false;
+    }
+    f.sta = Math.max(0, f.sta - n);
+    if (f.sta <= 8) f.tired = .6;
+    return true;
 }
 
 function finishMatch() {
@@ -741,7 +1209,7 @@ function onNet(m) {
         p2 = keepLocal ? applyFighterSnap(m.p2, {
             x: localP2.x, y: localP2.y, vx: localP2.vx, vy: localP2.vy,
             dir: localP2.dir, on: localP2.on, cd: localP2.cd, blk: localP2.blk,
-            atk: localP2.atk, sup: localP2.sup
+            atk: localP2.atk, sup: localP2.sup, sta: localP2.sta, maxSta: localP2.maxSta, tired: localP2.tired
         }) : m.p2;
         if (keepLocal) {
             control(p2, localKeys, localQueue);
@@ -802,6 +1270,7 @@ function throwGrab(f, k) {
 // Grab and hold opponent (Shift key), then throw with direction or attack
 function grab(f) {
     if (f.cd) return;
+    if (!spendSta(f, 14)) return;
     let t = f === p1 ? p2 : p1;
     if (f.grab) return throwGrab(f, 'shift');
     if (!t.heldBy && Math.abs(cx(f) - cx(t)) < 88 && Math.abs(f.y - t.y) < 45) {
@@ -821,6 +1290,7 @@ function grab(f) {
 // Signature move - unique to each weapon type (C key)
 function sigMove(f) {
     if (f.cd) return;
+    if (!spendSta(f, 36)) return;
     let t = f === p1 ? p2 : p1;
     flash(f.ch.name + ' Signature!');
 
@@ -1000,7 +1470,9 @@ function control(f, ks, queue) {
         f.vx = f.ch.speed * f.ch.spd;
         f.dir = 1;
     }
+    if (f.tired) f.vx *= .62;
     if (ks.arrowup && f.on) {
+        if (!spendSta(f, 13)) return applyQueuedInput(f, queue);
         f.vy = -720;
         f.on = 0;
         playJump();
@@ -1013,6 +1485,7 @@ function control(f, ks, queue) {
 function attack(f, t) {
     if (f.cd) return;
     if (t === 'shot') {
+        if (!spendSta(f, 18)) return;
         G.shots.push({
             x: cx(f) + f.dir * 44,
             y: f.y + 48,
@@ -1028,6 +1501,7 @@ function attack(f, t) {
         let p = meleeProfile(f);
         if (p) {
             let heavy = t === 'heavy';
+            if (!spendSta(f, heavy ? 27 : 13)) return;
             f.vx += f.dir * p.lunge;
             f.atk = {
                 t: heavy ? .38 : .28,
@@ -1043,6 +1517,7 @@ function attack(f, t) {
             G.fx.push({ x: cx(f) + f.dir * 54, y: f.y + 60, dir: f.dir, c: f.ch.accent, life: .34, slash: true });
             return;
         }
+        if (!spendSta(f, t === 'heavy' ? 22 : 10)) return;
         f.atk = {
             t: t === 'heavy' ? .34 : .25,
             a: t === 'heavy' ? .2 : .16,
@@ -1124,6 +1599,7 @@ function ultimateOf(f) {
 
 function superMove(f) {
     if (f.sup < 100 || f.cd || G.ult) return;
+    if (!spendSta(f, 45)) return;
     let t = f === p1 ? p2 : p1, u = ultimateOf(f);
     releaseGrab(f);
     releaseGrab(t);
@@ -1182,12 +1658,31 @@ function guardHit(t,n,k){
         shield=t.ch.kind==='shield',
         dmg=front?(shield?.08:.18):(shield?.42:.58),
         push=front?(shield?.12:.25):(shield?.55:.7);
+    t.sta=cl((t.sta||0)-(front?shield?5:9:14),0,t.maxSta||100);
+    if(t.sta<=0){t.blk=0;t.tired=.9;dmg=.85;push=.9;flash('Guard Break!')}
     G.fx.push({x:cx(t)-t.dir*30,y:t.y+58,dir:-t.dir,c:t.ch.accent,life:.28});
     t.sup=cl(t.sup+(front?shield?7:5:3),0,100);
     return {n:n*dmg,k:k*push,blocked:front};
 }
 // Apply damage to a fighter
-function damage(t,n,k){if(G.ult&&!G.ultHit)return;if(t.heldBy)releaseGrab(fighterByRef(t.heldBy));if(net.role==='cpu'&&!t.enemy)n*=D[diff].dmg;n*=(t===p1?p2.ch.atk:p1.ch.atk);let g=guardHit(t,n,k);n=g.n;k=g.k*KNOCKBACK_SCALE;n/=t.ch.def;t.hp=Math.max(0,t.hp-n);t.vx+=k;t.sup=cl(t.sup+n*.35,0,100);G.shake=Math.max(G.shake||0,Math.min(g.blocked?8:18,2+n*.35));for(let i=0;i<(g.blocked?8:14);i++)G.parts.push({x:cx(t)+rr(-12,12),y:t.y+rr(30,82),vx:rr(-260,260)+Math.sign(k||1)*rr(40,180),vy:rr(-380,80),life:rr(.28,.62),c:g.blocked? t.ch.accent : i%3? t.ch.accent:'#f6d27a',r:rr(2,7)})}
+function damage(t,n,k,type='melee',src=null){
+    if(G.ult&&!G.ultHit)return;
+    if(t.invuln>0)return;
+    if(t.counter>0&&type!=='counter'){
+        let attacker=src||(t===p1?p2:p1);
+        if(type==='magic'){
+            G.shots.push({x:cx(t)+t.dir*36,y:t.y+48,vx:t.dir*650,own:t,r:15,c:t.ch.accent,dmg:n*1.25,life:1});
+            flash('Reflected!');
+        }else if(attacker){
+            damage(attacker,n*2,-k,'counter',t);
+            flash('Counter Hit!');
+        }
+        t.counter=0;
+        t.invuln=.18;
+        return;
+    }
+    if(t.heldBy)releaseGrab(fighterByRef(t.heldBy));if(net.role==='cpu'&&!t.enemy)n*=D[diff].dmg;n*=(t===p1?p2.ch.atk:p1.ch.atk);let g=guardHit(t,n,k);n=g.n;k=g.k*KNOCKBACK_SCALE;n/=t.ch.def;t.hp=Math.max(0,t.hp-n);t.vx+=k;t.sup=cl(t.sup+n*.35,0,100);G.shake=Math.max(G.shake||0,Math.min(g.blocked?8:18,2+n*.35));for(let i=0;i<(g.blocked?8:14);i++)G.parts.push({x:cx(t)+rr(-12,12),y:t.y+rr(30,82),vx:rr(-260,260)+Math.sign(k||1)*rr(40,180),vy:rr(-380,80),life:rr(.28,.62),c:g.blocked? t.ch.accent : i%3? t.ch.accent:'#f6d27a',r:rr(2,7)})
+}
 // CPU opponent logic
 function ai(){
     let d=cx(p1)-cx(p2),dist=Math.abs(d),o=D[diff],
@@ -1209,10 +1704,40 @@ function ai(){
         if(Math.random()<.16)return sigMove(p2);
     }
 }
+
+function bossAI(dt) {
+    let d = cx(p1) - cx(p2), dist = Math.abs(d);
+    p2.dir = d < 0 ? -1 : 1;
+    p2.ai -= dt;
+    G.bossPhase = (G.bossPhase || 0) + dt;
+    p2.invuln = Math.sin(G.bossPhase * 1.55) > .45 ? .1 : 0;
+    if (!G.bossWarn && p2.ai <= 0) {
+        G.bossWarn = { x: p1.x - 45, y: p1.y + 30, w: 148, h: 82, t: 1.15, hit: 0 };
+        p2.ai = 1.95;
+    }
+    if (dist > 150) p2.vx = Math.sign(d || -1) * p2.ch.speed * .48;
+    else p2.vx = -Math.sign(d || -1) * 36;
+    if (dist < 116 && p2.cd <= 0 && !p2.invuln && Math.random()<.72) attack(p2, Math.random() < .7 ? 'light' : 'heavy');
+}
+
+function counterMove(f) {
+    if (f.cd) return;
+    if (!spendSta(f, 22)) return;
+    f.counter = .32;
+    f.invuln = .32;
+    f.cd = .38;
+    G.fx.push({ x: cx(f), y: f.y + 58, dir: f.dir, c: '#fff2a7', life: .42 });
+    flash('Counter!');
+}
 // Update fighter physics - cooldowns, blocking, gravity, position
 function phys(f,dt){
     f.cd=Math.max(0,f.cd-dt);
     f.blk=Math.max(0,f.blk-dt);
+    f.counter=Math.max(0,(f.counter||0)-dt);
+    f.invuln=Math.max(0,(f.invuln||0)-dt);
+    f.tired=Math.max(0,(f.tired||0)-dt);
+    let attacking=!!f.atk||!!f.blk||!!f.grab;
+    f.sta=cl((f.sta||0)+dt*(attacking?8:34),0,f.maxSta||100);
     if(f.grab){
         f.grab.t-=dt;
         let t=fighterByRef(f.grab.target);
@@ -1248,7 +1773,7 @@ function resolve(){
         if(a.atk&&!a.atk.hit&&a.atk.a>0){
             let h={x:a.dir>0?a.x+a.w:a.x-a.atk.reach,y:a.y+24,w:a.atk.reach,h:70};
             if(hit(h,b)){
-                damage(b,a.atk.dmg,a.dir*(a.atk.knock||280));
+                damage(b,a.atk.dmg,a.dir*(a.atk.knock||280),'melee',a);
                 a.sup=cl(a.sup+(a.atk.melee?12:9)*ultGainRate(a),0,100);
                 if(a.atk.melee)a.vx+=a.dir*90;
                 a.atk.hit=1;
@@ -1257,14 +1782,14 @@ function resolve(){
     for(let s of G.shots){
         let t=s.own===p1?p2:p1;
         if(hit({x:s.x-s.r,y:s.y-s.r,w:s.r*2,h:s.r*2},t)){
-            damage(t,s.dmg,Math.sign(s.vx||s.own.dir||1)*160);
+            damage(t,s.dmg,Math.sign(s.vx||s.own.dir||1)*160,'magic',s.own);
             s.own.sup=cl(s.own.sup+6*ultGainRate(s.own),0,100);
             s.life=0;
         }
     }
 }
 // Main update function - processes input, physics, collisions, game state
-function update(dt){ensureFighters();if(G.ult){updateUltimate(dt);bars();return}if(net.role==='join'){control(p2,keys,q);phys(p2,dt);bars();return}p1.sup=cl(p1.sup+dt*SUPER_GAIN*ultGainRate(p1),0,100);p2.sup=cl(p2.sup+dt*SUPER_GAIN*ultGainRate(p2),0,100);control(p1,keys,q);if(net.role==='host')control(p2,net.keys,rq);else ai();phys(p1,dt);phys(p2,dt);for(let s of G.shots){s.x+=s.vx*dt;s.y+=(s.vy||0)*dt;s.life-=dt}G.shots=G.shots.filter(s=>s.life>0);resolve();for(let p of G.parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=760*dt;p.life-=dt}G.parts=G.parts.filter(p=>p.life>0);for(let f of G.fx)f.life-=dt;G.fx=G.fx.filter(f=>f.life>0);G.shake=Math.max(0,(G.shake||0)-dt*34);G.time-=dt;bars();els.timer.textContent=Math.max(0,Math.ceil(G.time));if(p1.hp<=0||p2.hp<=0||G.time<=0)endGame()}
+function update(dt){if(story.active&&!story.boss)return updateStory(dt);ensureFighters();if(G.ult){updateUltimate(dt);bars();return}if(net.role==='join'){control(p2,keys,q);phys(p2,dt);bars();return}p1.sup=cl(p1.sup+dt*SUPER_GAIN*ultGainRate(p1),0,100);p2.sup=cl(p2.sup+dt*SUPER_GAIN*ultGainRate(p2),0,100);control(p1,keys,q);if(net.role==='host')control(p2,net.keys,rq);else if(G.storyBoss)bossAI(dt);else ai();phys(p1,dt);phys(p2,dt);if(G.bossWarn){G.bossWarn.t-=dt;if(G.bossWarn.t<=0&&!G.bossWarn.hit){G.bossWarn.hit=1;if(hit(G.bossWarn,p1))damage(p1,12,p2.dir*360,'melee',p2)}if(G.bossWarn.t<-0.35)G.bossWarn=null}for(let s of G.shots){s.x+=s.vx*dt;s.y+=(s.vy||0)*dt;s.life-=dt}G.shots=G.shots.filter(s=>s.life>0);resolve();for(let p of G.parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=760*dt;p.life-=dt}G.parts=G.parts.filter(p=>p.life>0);for(let f of G.fx)f.life-=dt;G.fx=G.fx.filter(f=>f.life>0);G.shake=Math.max(0,(G.shake||0)-dt*34);G.time-=dt;bars();els.timer.textContent=Math.max(0,Math.ceil(G.time));if(p1.hp<=0||p2.hp<=0||G.time<=0)endGame()}
 // End the game and show results
 function awardCoins(playerWin) {
     if (!playerWin || net.role !== 'cpu' || G.paid) return 0;
@@ -1276,7 +1801,7 @@ function awardCoins(playerWin) {
     saveGame();
     return reward;
 }
-function endGame(){if(G.over&&endTimer)return;G.over=1;G.run=0;dangerMode=false;musicMode='end';els.dangerFlash.style.borderColor='transparent';let playerWin=p1.hp>p2.hp, coins=awardCoins(playerWin);playEndMusic(playerWin);els.msg.innerHTML=(p1.hp===p2.hp?'DRAW':(playerWin?p1.ch.name:p2.ch.name)+' WINS')+(coins?'<br><span style="font-size:24px;color:#fff2a6">+'+coins+' coins</span>':'')+'<br><span style="font-size:22px;color:white">returning to menu</span>';els.msg.style.display='flex';finishMatch()}
+function endGame(){if(G.over&&endTimer)return;G.over=1;G.run=0;dangerMode=false;musicMode='end';els.dangerFlash.style.borderColor='transparent';let playerWin=p1.hp>p2.hp;if(G.storyBoss){playEndMusic(playerWin);els.msg.innerHTML=(playerWin?'BOSS PURIFIED':'DEFEATED')+'<br><span style="font-size:22px;color:white">returning to story</span>';els.msg.style.display='flex';endTimer=setTimeout(()=>playerWin?storyWin():storyLose(),1800);return}let coins=awardCoins(playerWin);playEndMusic(playerWin);els.msg.innerHTML=(p1.hp===p2.hp?'DRAW':(playerWin?p1.ch.name:p2.ch.name)+' WINS')+(coins?'<br><span style="font-size:24px;color:#fff2a6">+'+coins+' coins</span>':'')+'<br><span style="font-size:22px;color:white">returning to menu</span>';els.msg.style.display='flex';finishMatch()}
 // Draw background (sky, ruins, trees, ground)
 function drawBg() {
     let g = ctx.createLinearGradient(0, 0, 0, H());
@@ -1285,6 +1810,12 @@ function drawBg() {
     g.addColorStop(.72, '#16200e');
     g.addColorStop(1, '#07140c');
     ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W(), H());
+    let light = ctx.createRadialGradient(W() * .35, H() * .18, 20, W() * .35, H() * .18, W() * .75);
+    light.addColorStop(0, '#fff2a71c');
+    light.addColorStop(.45, '#ffffff00');
+    light.addColorStop(1, '#00000045');
+    ctx.fillStyle = light;
     ctx.fillRect(0, 0, W(), H());
 
     ctx.fillStyle = '#fff2a7';
@@ -1335,6 +1866,854 @@ function drawBg() {
     ctx.fillStyle = fog;
     ctx.fillRect(0, F() - 80, W(), 130);
 }
+function storyGate() {
+    return { x: STORY_HUB.x, y: STORY_HUB.y - 40 };
+}
+
+function storyBiomeAt(x, y) {
+    if (y > STORY_WORLD_H - 620) return STORY_BIOMES[0];
+    if (Math.hypot(x - STORY_HUB.x, y - STORY_HUB.y) < 430) return ['Shrine Crossroads', '#24351f', '#fff2a7', '#6d4327'];
+    let best = 0, bd = 99999;
+    for (let i = 0; i < STORY_TOWNS.length; i++) {
+        let d = Math.hypot(x - STORY_TOWNS[i].x, y - STORY_TOWNS[i].y);
+        if (d < bd) { best = i; bd = d; }
+    }
+    return STORY_BIOMES[Math.min(best, STORY_BIOMES.length - 1)];
+}
+
+function storyQuestRoute() {
+    let stage = Math.min(story.stage, STORY_BOSS_COUNT - 1),
+        home = STORY_TOWNS[stage] || STORY_TOWNS[0],
+        partner = STORY_TOWNS[STORY_ROUTE_PARTNERS[stage] || 1] || STORY_TOWNS[1];
+    return {
+        home,
+        partner,
+        step: save.storyTaskStage === story.stage ? save.storyTaskStep || 0 : 0
+    };
+}
+
+function storyQuestHint() {
+    if (story.stage >= STORY_BOSS_COUNT) return 'Return to the shrine and face the final rot.';
+    let q = storyQuestRoute();
+    if (story.quest >= story.stage + 1) return q.home.name + ' is ready. Return to the shrine and press Enter.';
+    if (q.step === 0) return 'Go to ' + q.home.name + ' and talk to ' + q.home.npc + '.';
+    if (q.step === 1) return 'Travel to ' + q.partner.name + ' for the item ' + q.home.name + ' needs.';
+    return 'Return to ' + q.home.name + ' with help from ' + q.partner.name + '.';
+}
+
+function storyObjectivePoint() {
+    if (story.stage >= STORY_BOSS_COUNT) return storyGate();
+    let q = storyQuestRoute();
+    if (story.quest >= story.stage + 1) return storyGate();
+    return q.step === 1 ? q.partner : q.home;
+}
+
+function startFinalQuiz() {
+    let pool = FINAL_QUIZ.slice().sort(() => Math.random() - .5).slice(0, 3);
+    story.quiz = { qs: pool, i: 0, correct: 0 };
+    story.text = 'Final Shrine Quiz: answer with 1, 2, or 3. Wrong answers send you back to Last Hearth.';
+}
+
+function answerFinalQuiz(k) {
+    if (!story.quiz || !['1', '2', '3'].includes(k)) return;
+    let pick = parseInt(k) - 1,
+        quiz = story.quiz,
+        cur = quiz.qs[quiz.i];
+    if (pick === cur.correct) {
+        quiz.correct++;
+        quiz.i++;
+        if (quiz.i >= quiz.qs.length) {
+            story.quiz = null;
+            save.storyQuizPassed = true;
+            saveGame();
+            story.text = 'The shrine accepts your memory. Press Enter at the shrine to face the final rot.';
+        } else {
+            story.text = 'Correct. Question ' + (quiz.i + 1) + ' of ' + quiz.qs.length + '.';
+        }
+    } else {
+        story.quiz = null;
+        save.storyQuizPassed = false;
+        save.coins = Math.max(0, (save.coins || 0) - 40);
+        let last = STORY_TOWNS[STORY_TOWNS.length - 1];
+        story.x = last.x;
+        story.y = last.y + 250;
+        save.storyX = story.x;
+        save.storyY = story.y;
+        saveGame();
+        story.text = 'Wrong. The shrine knows you skipped the story. -40 coins. Return from Last Hearth and try the quiz again.';
+    }
+}
+
+function quizText() {
+    if (!story.quiz) return '';
+    let cur = story.quiz.qs[story.quiz.i];
+    return 'Final Quiz ' + (story.quiz.i + 1) + '/' + story.quiz.qs.length + ': ' + cur.q + '  1) ' + cur.a[0] + '  2) ' + cur.a[1] + '  3) ' + cur.a[2];
+}
+
+function townPurpose(t) {
+    return {
+        forest: 'tutorial village',
+        solar: 'banner market',
+        crypt: 'bone shrine',
+        cinder: 'ash forge',
+        night: 'mask bridge',
+        frost: 'watchfire town',
+        root: 'root bell grove',
+        storm: 'lightning tower',
+        dojo: 'rune school',
+        lab: 'potion works',
+        star: 'wish temple',
+        iron: 'bridge forge',
+        dragon: 'scale roost',
+        ice: 'thaw bell town',
+        infernal: 'braziers',
+        faerie: 'fair circle',
+        plague: 'quiet bell',
+        sky: 'kite port',
+        shadow: 'scout camp',
+        tide: 'tide locks',
+        rot: 'final hearth'
+    }[t.arch] || 'kingdom town';
+}
+
+function drawBiomePatch(x, y, w, h, b, restored) {
+    ctx.fillStyle = b[0] === 'Heart of Rot' ? '#25070d' : b[0].includes('Frost') || b[0].includes('Icy') ? '#dff8ff22' : b[0].includes('Cinder') || b[0].includes('Infernal') ? '#ff5a2a22' : b[0].includes('Tidal') || b[0].includes('Sky') ? '#40e0d022' : b[1];
+    ctx.fillRect(x, y, w, h);
+    ctx.globalAlpha = .16;
+    ctx.fillStyle = restored > 10 ? b[2] : '#050008';
+    for (let i = 0; i < 12; i++) {
+        ctx.beginPath();
+        ctx.arc(x + (i * 97) % w, y + (i * 151) % h, safeRadius(38 + i % 4 * 12), 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+}
+
+function drawBiomeLandmark(x, y, w, h, b, restored) {
+    let name = b[0], cxp = x + w * .58, cyp = y + h * .52;
+    ctx.save();
+    ctx.globalAlpha = .86;
+    ctx.fillStyle = b[2];
+    if (name.includes('Solar')) {
+        ctx.beginPath(); ctx.arc(cxp, cyp, safeRadius(62), 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff2a7'; for (let i = 0; i < 12; i++) ctx.fillRect(cxp + Math.cos(i) * 88, cyp + Math.sin(i) * 88, 34, 8);
+    } else if (name.includes('Bone')) {
+        for (let i = 0; i < 7; i++) { ctx.fillRect(cxp - 120 + i * 38, cyp - 20 - i % 2 * 18, 18, 96); ctx.fillRect(cxp - 126 + i * 38, cyp - 30 - i % 2 * 18, 30, 16); }
+    } else if (name.includes('Cinder') || name.includes('Infernal')) {
+        ctx.fillStyle = '#1b0804'; ctx.fillRect(cxp - 105, cyp - 30, 210, 80);
+        ctx.fillStyle = '#ff7043'; for (let i = 0; i < 6; i++) ctx.fillRect(cxp - 90 + i * 36, cyp - 75 - i % 2 * 18, 18, 70);
+    } else if (name.includes('Night') || name.includes('Shadow')) {
+        ctx.fillStyle = '#050008'; ctx.fillRect(cxp - 105, cyp - 80, 210, 145);
+        ctx.fillStyle = b[2]; ctx.fillRect(cxp - 10, cyp - 130, 20, 210);
+    } else if (name.includes('Frost') || name.includes('Icy')) {
+        for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(cxp - 130 + i * 65, cyp + 70); ctx.lineTo(cxp - 96 + i * 65, cyp - 110); ctx.lineTo(cxp - 58 + i * 65, cyp + 70); ctx.fill(); }
+    } else if (name.includes('Storm') || name.includes('Sky')) {
+        for (let i = 0; i < 5; i++) { ctx.fillRect(cxp - 100 + i * 50, cyp - 115, 12, 190); ctx.fillRect(cxp - 118 + i * 50, cyp - 120, 48, 12); }
+    } else if (name.includes('Tidal')) {
+        ctx.beginPath(); ctx.arc(cxp, cyp, safeRadius(112), 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#d8f7ff66'; ctx.fillRect(cxp - 140, cyp - 10, 280, 18);
+    } else if (name.includes('Heart')) {
+        ctx.fillStyle = '#050008'; ctx.fillRect(cxp - 115, cyp - 100, 230, 190);
+        ctx.fillStyle = '#ff1744'; ctx.fillRect(cxp - 18, cyp - 130, 36, 250);
+    } else {
+        ctx.fillRect(cxp - 90, cyp - 75, 180, 130);
+        ctx.fillStyle = '#fff2a755'; ctx.fillRect(cxp - 62, cyp - 44, 124, 22);
+    }
+    if (restored > STORY_BIOMES.indexOf(b)) {
+        ctx.globalAlpha = .28;
+        ctx.fillStyle = '#fff2a7';
+        ctx.beginPath(); ctx.arc(cxp, cyp, safeRadius(150), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+}
+
+function nearestTown() {
+    let best = null, bd = 99999;
+    for (let t of STORY_TOWNS) {
+        let d = Math.hypot(story.x - t.x, story.y - t.y);
+        if (d < bd) { best = t; bd = d; }
+    }
+    return bd < 285 ? best : null;
+}
+
+function interactWorldTown(t) {
+    if (!t) return;
+    if (story.stage >= STORY_BOSS_COUNT) {
+        story.text = t.npc + ': "' + t.line + '" The final road is open from the shrine.';
+        return;
+    }
+    let q = storyQuestRoute();
+    if (story.quest >= story.stage + 1) {
+        story.text = t.npc + ': "' + t.line + '" The boss gate for ' + q.home.name + ' is already open.';
+        return;
+    }
+    if (q.step === 0 && t === q.home) {
+        save.storyTaskStage = story.stage;
+        save.storyTaskStep = 1;
+        save.storyX = story.x;
+        save.storyY = story.y;
+        saveGame();
+        story.text = t.npc + ': "' + t.line + '" Bring help from ' + q.partner.name + ', then return here.';
+        return;
+    }
+    if (q.step === 1 && t === q.partner) {
+        save.storyTaskStage = story.stage;
+        save.storyTaskStep = 2;
+        save.storyX = story.x;
+        save.storyY = story.y;
+        saveGame();
+        story.text = t.npc + ': "' + t.line + '" You received what ' + q.home.name + ' needs. Take it back.';
+        return;
+    }
+    if (q.step === 2 && t === q.home) {
+        story.quest = Math.max(story.quest, story.stage + 1);
+        save.storyQuest = story.quest;
+        save.storyTaskStage = story.stage;
+        save.storyTaskStep = 3;
+        save.storyX = story.x;
+        save.storyY = story.y;
+        saveGame();
+        story.text = t.npc + ': "You crossed the roads and brought the towns together." Quest complete. Follow the gate near ' + q.home.name + '.';
+        return;
+    }
+    story.text = t.npc + ': "' + t.line + '" This is the ' + townPurpose(t) + ', known for ' + townMood(t)[0] + '. ' + storyQuestHint();
+}
+
+function enterTown(t) {
+    story.inTown = 1;
+    story.town = t;
+    story.x = W() / 2;
+    story.y = H() - 140;
+    story.talk = 0;
+    story.text = t.name + ': explore the streets. Talk, read signs, visit buildings, or leave by the south road.';
+}
+
+function leaveTown() {
+    let t = story.town || STORY_TOWNS[0];
+    story.inTown = 0;
+    story.x = t.x;
+    story.y = t.y + 150;
+    story.town = null;
+    story.text = chapterText();
+}
+
+function townLayout() {
+    let cx = W() / 2, cy = H() / 2;
+    return {
+        cx, cy,
+        shop: Math.min(245, Math.max(180, W() / 2 - 155)),
+        home: Math.min(300, Math.max(210, W() / 2 - 100)),
+        far: Math.min(468, Math.max(260, W() / 2 - 95))
+    };
+}
+
+function townObjects() {
+    let t = story.town || STORY_TOWNS[0];
+    let l = townLayout();
+    return [
+        { id: 'npc', label: t.npc, x: l.cx, y: l.cy + 12, r: 78 },
+        { id: 'notice', label: 'notice board', x: l.cx - 150, y: l.cy + 56, r: 70 },
+        { id: 'shop', label: 'shop', x: l.cx - l.shop, y: l.cy - 80, r: 78 },
+        { id: 'inn', label: 'inn', x: l.cx + l.shop, y: l.cy - 80, r: 78 },
+        { id: 'smith', label: 'smith', x: l.cx - l.far, y: l.cy + 28, r: 70 },
+        { id: 'store', label: 'storehouse', x: l.cx + l.far, y: l.cy + 28, r: 70 },
+        { id: 'homeL', label: 'west home', x: l.cx - l.home, y: l.cy + 128, r: 66 },
+        { id: 'homeR', label: 'east home', x: l.cx + l.home, y: l.cy + 128, r: 66 },
+        { id: 'shrine', label: 'shrine', x: l.cx, y: l.cy - 125, r: 82 },
+        { id: 'well', label: 'well', x: l.cx + 150, y: l.cy + 58, r: 66 },
+        { id: 'banner', label: 'town banner', x: l.cx, y: l.cy - 220, r: 72 },
+        { id: 'exit', label: 'south road', x: l.cx, y: H() - 52, r: 105 }
+    ];
+}
+
+function nearbyTownObject() {
+    let best = null, bd = 99999;
+    for (let o of townObjects()) {
+        let d = Math.hypot(story.x - o.x, story.y - o.y);
+        if (d < o.r && d < bd) { best = o; bd = d; }
+    }
+    return best;
+}
+
+function interactTownObject(o) {
+    let t = story.town || STORY_TOWNS[0];
+    if (!o) {
+        story.text = 'Move near a person, counter, banner, notice board, or exit before pressing Enter.';
+        return;
+    }
+    if (o.id === 'npc') {
+        story.quest = Math.max(story.quest, story.stage + 1);
+        save.storyQuest = story.quest;
+        save.storyX = story.x;
+        save.storyY = story.y;
+        saveGame();
+        story.talk = 1;
+        story.text = t.npc + ': "' + t.line + '" Quest complete. The next gate is weaker.';
+    } else if (o.id === 'notice') {
+        story.text = 'Notice Board: ' + chapterText() + ' Bosses flash red warning zones before striking. B counters danger.';
+    } else if (o.id === 'shop') {
+        story.text = 'Shop: maps, lantern oil, charms, and travel food are stacked by the door. The shopkeeper marks your next route.';
+    } else if (o.id === 'inn') {
+        story.text = 'Inn: travelers whisper that the corrupted heroes still protect their people in broken ways.';
+    } else if (o.id === 'smith') {
+        story.text = 'Smith: practice blades, cracked shields, and old hero crests hang beside a warm forge.';
+    } else if (o.id === 'store') {
+        story.text = 'Storehouse: villagers saved grain, medicine, and repair wood for the road ahead.';
+    } else if (o.id === 'homeL' || o.id === 'homeR') {
+        story.text = 'Home: a family thanks you for checking the town. Their lamps burn brighter after each quest.';
+    } else if (o.id === 'shrine') {
+        story.text = 'Shrine: the stone records every restored kingdom. The rot retreats when people remember each other.';
+    } else if (o.id === 'well') {
+        story.text = 'Town Well: clear water returns slowly. Each completed quest makes the reflection brighter.';
+    } else if (o.id === 'banner') {
+        story.text = t.name + ' Banner: ' + (story.quest >= story.stage + 1 ? 'restored colors ripple through the cloth.' : 'the cloth is dull until the town request is complete.');
+    } else if (o.id === 'exit') {
+        leaveTown();
+    }
+}
+
+function updateStory(dt) {
+    let sp = story.inTown ? 190 : keys.shift ? 390 : 280,
+        dx = (keys.arrowright ? 1 : 0) - (keys.arrowleft ? 1 : 0),
+        dy = (keys.arrowdown ? 1 : 0) - (keys.arrowup ? 1 : 0);
+    if (story.quiz) {
+        for (let k of q.splice(0, 10)) answerFinalQuiz(k);
+        els.storyHud.textContent = quizText() || story.text;
+        els.storyMini.textContent = 'Final Shrine Quiz | Press 1, 2, or 3';
+        return;
+    }
+    if (story.inTown) {
+        story.x = cl(story.x + dx * sp * dt, 70, W() - 70);
+        story.y = cl(story.y + dy * sp * dt, 100, H() - 45);
+        if (keys.enter) {
+            keys.enter = false;
+            interactTownObject(nearbyTownObject());
+        }
+        els.storyHud.textContent = story.text;
+        let o = nearbyTownObject();
+        els.storyMini.textContent = story.town.name + ' | Enter: ' + (o ? o.label : 'move near something');
+        return;
+    }
+    story.x = cl(story.x + dx * sp * dt, 80, STORY_WORLD_W - 80);
+    story.y = cl(story.y + dy * sp * dt, 90, STORY_WORLD_H - 80);
+    save.storyX = story.x;
+    save.storyY = story.y;
+    story.camX = cl(story.x - W() / 2, 0, STORY_WORLD_W - W());
+    story.camY = cl(story.y - H() / 2, 0, STORY_WORLD_H - H());
+    let town = nearestTown(),
+        gate = storyGate(),
+        nearGate = Math.hypot(story.x - gate.x, story.y - gate.y) < 285;
+    if (keys.enter) {
+        keys.enter = false;
+        if (town) interactWorldTown(town);
+        else if (nearGate) {
+            if (story.stage >= STORY_BOSS_COUNT && !save.storyQuizPassed) startFinalQuiz();
+            else if (story.quest >= story.stage + 1) startStoryBoss();
+            else story.text = 'The shrine is listening, but no trial opens yet. Finish the town quest first.';
+        }
+    }
+    els.storyHud.textContent = story.text || 'Explore the forest road.';
+    els.storyMini.textContent = storyBiomeAt(story.x, story.y)[0] + ' | Enter: ' + (town ? town.name : nearGate ? 'boss gate' : 'explore') + ' | ' + storyQuestHint();
+}
+
+function drawWorldRoad(points, w, color, glow) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = w;
+    ctx.lineCap = ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+        let p = points[i], prev = points[i - 1];
+        ctx.quadraticCurveTo((prev.x + p.x) / 2, prev.y, p.x, p.y);
+    }
+    ctx.stroke();
+    if (glow) {
+        ctx.globalAlpha = .45;
+        ctx.strokeStyle = '#fff2a7';
+        ctx.lineWidth = Math.max(4, w * .13);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    }
+}
+
+function drawHubShrine(time, restored) {
+    let x = STORY_HUB.x, y = STORY_HUB.y;
+    ctx.fillStyle = '#0008';
+    ctx.beginPath(); ctx.ellipse(x, y + 62, 230, 86, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = restored > 5 ? '#5f7f45' : '#293a24';
+    ctx.beginPath(); ctx.arc(x, y, safeRadius(260), 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#d8b45a88'; ctx.lineWidth = 14; ctx.stroke();
+    ctx.fillStyle = '#d8b45a';
+    ctx.fillRect(x - 62, y - 140, 124, 210);
+    ctx.fillStyle = '#fff2a7';
+    ctx.fillRect(x - 92, y - 170, 184, 34);
+    ctx.fillRect(x - 36, y - 220, 72, 54);
+    ctx.globalAlpha = .28 + Math.sin(time * 2) * .08;
+    ctx.beginPath(); ctx.arc(x, y - 82, safeRadius(132), 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    let ready = story.quest >= story.stage + 1 || story.stage >= STORY_BOSS_COUNT;
+    ctx.globalAlpha = ready ? .34 : .16;
+    ctx.fillStyle = ready ? '#7ad08c' : '#ff1744';
+    ctx.beginPath(); ctx.arc(x, y - 42, safeRadius(285 + Math.sin(time * 3) * 12), 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#050008bb'; ctx.fillRect(x - 138, y + 96, 276, 30);
+    ctx.fillStyle = '#fff2a7'; ctx.font = '20px Georgia'; ctx.textAlign = 'center'; ctx.fillText('Crossroads Shrine', x, y + 118);
+    ctx.fillStyle = ready ? '#fff2a7' : '#ffb2b2';
+    ctx.font = '14px Georgia';
+    ctx.fillText(ready ? 'Enter: boss fight' : 'finish the town quest first', x, y + 140);
+    ctx.textAlign = 'left';
+}
+
+function drawObjectiveCompass() {
+    let p = storyObjectivePoint(),
+        sx = p.x - story.camX,
+        sy = p.y - story.camY,
+        dx = sx - W() / 2,
+        dy = sy - H() / 2,
+        ang = Math.atan2(dy, dx),
+        edgeX = cl(W() / 2 + Math.cos(ang) * Math.min(W() / 2 - 62, 260), 54, W() - 54),
+        edgeY = cl(H() / 2 + Math.sin(ang) * Math.min(H() / 2 - 62, 180), 82, H() - 82);
+    if (sx > 45 && sx < W() - 45 && sy > 75 && sy < H() - 75) return;
+    ctx.save();
+    ctx.translate(edgeX, edgeY);
+    ctx.rotate(ang);
+    ctx.fillStyle = '#050008dd';
+    ctx.beginPath(); ctx.arc(0, 0, safeRadius(32), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff2a7';
+    ctx.beginPath();
+    ctx.moveTo(24, 0);
+    ctx.lineTo(-12, -16);
+    ctx.lineTo(-4, 0);
+    ctx.lineTo(-12, 16);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawFinalQuizPanel() {
+    if (!story.quiz) return;
+    let cur = story.quiz.qs[story.quiz.i],
+        x = W() / 2 - 330,
+        y = 92;
+    ctx.fillStyle = '#050008e8';
+    ctx.fillRect(x, y, 660, 190);
+    ctx.strokeStyle = '#d8b45a';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x, y, 660, 190);
+    ctx.fillStyle = '#fff2a7';
+    ctx.font = '22px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText('Final Shrine Quiz', W() / 2, y + 34);
+    ctx.font = '16px Georgia';
+    ctx.fillText(cur.q, W() / 2, y + 66);
+    ctx.textAlign = 'left';
+    ctx.font = '15px Georgia';
+    for (let i = 0; i < 3; i++) {
+        ctx.fillStyle = '#102413';
+        ctx.fillRect(x + 50, y + 88 + i * 30, 560, 24);
+        ctx.fillStyle = '#e7d9b7';
+        ctx.fillText((i + 1) + '. ' + cur.a[i], x + 66, y + 106 + i * 30);
+    }
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffb2b2';
+    ctx.fillText('Wrong answer: back to Last Hearth and -40 coins', W() / 2, y + 178);
+    ctx.textAlign = 'left';
+}
+
+function townMood(t) {
+    return {
+        forest: ['lantern smoke', '#cfa85a'],
+        solar: ['sun banners', '#fff2a7'],
+        crypt: ['name stones', '#b7ffb7'],
+        cinder: ['forge sparks', '#ff7043'],
+        night: ['mask lights', '#8f63ff'],
+        frost: ['watchfires', '#e0f6ff'],
+        root: ['root songs', '#73bf45'],
+        storm: ['rod bells', '#fff36b'],
+        dojo: ['paper wards', '#f7f7ff'],
+        lab: ['bottle steam', '#b4e060'],
+        star: ['wish ribbons', '#d7a6ff'],
+        iron: ['hammer rhythm', '#ffcc7a'],
+        dragon: ['scale wind', '#ffc163'],
+        ice: ['thaw chimes', '#e0f6ff'],
+        infernal: ['coal prayers', '#ff4444'],
+        faerie: ['circle music', '#fffacd'],
+        plague: ['quiet bells', '#9d4edd'],
+        sky: ['kite shadows', '#00ffff'],
+        shadow: ['scout fires', '#b19cd9'],
+        tide: ['lock water', '#40e0d0'],
+        rot: ['last embers', '#ff1744']
+    }[t.arch] || ['village life', t.c];
+}
+
+function drawTownNpc(dx, dy, c, time, seed) {
+    let bob = Math.sin(time * 2 + seed) * 3;
+    ctx.fillStyle = '#0008';
+    ctx.beginPath(); ctx.ellipse(dx, dy + 29, 15, 5, 0, 0, Math.PI * 2); ctx.fill();
+    shadeRect(ctx, dx - 8, dy + bob, 16, 28, c, '#ffffff55', '#00000077');
+    shadeCircle(ctx, dx, dy - 8 + bob, 9, '#f0c087', '#ffe0c2', '#5b2e1e');
+    ctx.fillStyle = '#050008';
+    ctx.fillRect(dx - 4, dy - 10 + bob, 3, 3);
+    ctx.fillRect(dx + 2, dy - 10 + bob, 3, 3);
+}
+
+function drawTownCulture(t, time) {
+    let mood = townMood(t), c = mood[1];
+    ctx.fillStyle = '#050008aa';
+    ctx.fillRect(-92, -244, 184, 26);
+    ctx.fillStyle = c;
+    ctx.font = '13px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText(mood[0], 0, -226);
+    ctx.textAlign = 'left';
+    for (let i = 0; i < 4; i++) drawTownNpc(-210 + i * 140, 108 + (i % 2) * 46, i % 2 ? c : '#e7d9b7', time, i + t.x);
+    for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = c;
+        ctx.globalAlpha = .28 + Math.sin(time * 2 + i) * .08;
+        ctx.beginPath();
+        ctx.arc(-240 + i * 120, -72 + Math.sin(i) * 42, safeRadius(11 + i % 3 * 4), 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (t.arch === 'solar' || t.arch === 'sky' || t.arch === 'storm') {
+        for (let i = 0; i < 5; i++) { ctx.fillStyle = c; ctx.fillRect(-280 + i * 140, -176, 28, 54); ctx.fillStyle = '#05000866'; ctx.fillRect(-274 + i * 140, -166, 16, 34); }
+    } else if (t.arch === 'crypt' || t.arch === 'plague' || t.arch === 'shadow') {
+        for (let i = 0; i < 7; i++) { ctx.fillStyle = c; ctx.fillRect(-300 + i * 52, 146 - i % 2 * 18, 18, 46); ctx.fillStyle = '#050008'; ctx.fillRect(-304 + i * 52, 138 - i % 2 * 18, 26, 9); }
+    } else if (t.arch === 'tide' || t.arch === 'ice' || t.arch === 'frost') {
+        ctx.strokeStyle = c; ctx.lineWidth = 5; ctx.beginPath(); for (let x = -270; x <= 270; x += 30) ctx.lineTo(x, 168 + Math.sin(time * 3 + x * .04) * 10); ctx.stroke();
+    } else if (t.arch === 'cinder' || t.arch === 'infernal' || t.arch === 'iron') {
+        for (let i = 0; i < 9; i++) { ctx.fillStyle = i % 2 ? '#ffcc7a' : c; ctx.fillRect(-300 + i * 76, 154 - Math.sin(time * 5 + i) * 12, 10, 22); }
+    } else {
+        for (let i = 0; i < 8; i++) { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(-300 + i * 86, -150 + i % 2 * 285, safeRadius(10), 0, Math.PI * 2); ctx.fill(); }
+    }
+}
+
+function drawWorldTown(t, time, restored) {
+    let near = Math.hypot(story.x - t.x, story.y - t.y) < 285, built = restored >= STORY_TOWNS.indexOf(t);
+    let q = story.stage < STORY_BOSS_COUNT ? storyQuestRoute() : null,
+        role = q && t === q.home ? 'quest start' : q && t === q.partner ? 'quest item' : townPurpose(t),
+        active = q && (t === q.home || t === q.partner) && story.quest < story.stage + 1;
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    ctx.fillStyle = '#0008';
+    ctx.beginPath(); ctx.ellipse(0, 72, 360, 150, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = built ? '#314d2a' : '#221620';
+    ctx.beginPath(); ctx.ellipse(0, 26, 330, 235, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = near ? .32 : .13;
+    ctx.fillStyle = active ? '#fff2a7' : near ? '#fff2a7' : t.c;
+    ctx.beginPath(); ctx.ellipse(0, 16, active ? 370 : 330, active ? 250 : 230, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#6a4a2e';
+    ctx.lineWidth = 34;
+    ctx.lineCap = ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-305, 74); ctx.lineTo(0, 74); ctx.lineTo(305, 74);
+    ctx.moveTo(0, 74); ctx.lineTo(0, -170);
+    ctx.moveTo(-150, 74); ctx.lineTo(-235, 160);
+    ctx.moveTo(150, 74); ctx.lineTo(235, 160);
+    ctx.stroke();
+    ctx.strokeStyle = '#d8b45a66';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    function hut(x, y, w, h, roof, peak) {
+        ctx.fillStyle = '#0008'; ctx.fillRect(x - 8, y + h - 3, w + 16, 12);
+        shadeRect(ctx, x, y, w, h, '#7a5735', '#c28b58', '#2b170c');
+        ctx.fillStyle = roof;
+        ctx.beginPath();
+        if (peak === 'round') { ctx.arc(x + w / 2, y + 5, safeRadius(w * .58), Math.PI, 0); ctx.lineTo(x + w, y + h * .25); ctx.lineTo(x, y + h * .25); }
+        else if (peak === 'tower') { ctx.moveTo(x + w / 2, y - 52); ctx.lineTo(x + w + 13, y + 5); ctx.lineTo(x - 13, y + 5); }
+        else { ctx.moveTo(x - 14, y + 5); ctx.lineTo(x + w / 2, y - 36); ctx.lineTo(x + w + 14, y + 5); }
+        ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = .35;
+        ctx.fillStyle = '#fff2a7';
+        ctx.beginPath();
+        ctx.moveTo(x - 7, y + 6);
+        ctx.lineTo(x + w / 2, peak === 'tower' ? y - 43 : y - 26);
+        ctx.lineTo(x + w / 2 - 10, y + 8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#1d1308'; ctx.fillRect(x + w / 2 - 9, y + h - 28, 18, 28);
+        ctx.fillStyle = '#fff2a799'; ctx.fillRect(x + 9, y + 17, 14, 12); ctx.fillRect(x + w - 23, y + 17, 14, 12);
+    }
+
+    let roof = t.arch === 'frost' || t.arch === 'ice' ? '#dff8ff' : t.arch === 'night' || t.arch === 'shadow' ? '#050008' : t.arch === 'cinder' || t.arch === 'infernal' ? '#6b1d17' : t.arch === 'tide' ? '#1d6770' : t.c;
+    hut(-258, -38, 86, 72, roof, t.arch === 'frost' || t.arch === 'ice' ? 'tower' : 'gable');
+    hut(-135, -130, 104, 88, roof, t.arch === 'faerie' || t.arch === 'root' ? 'round' : 'gable');
+    hut(42, -146, 112, 94, roof, ['storm','sky','rot','dojo'].includes(t.arch) ? 'tower' : 'gable');
+    hut(184, -28, 92, 80, roof, t.arch === 'crypt' || t.arch === 'plague' ? 'tower' : 'gable');
+    hut(-62, 108, 96, 72, roof, t.arch === 'forest' || t.arch === 'faerie' ? 'round' : 'gable');
+    hut(126, 116, 82, 66, roof, 'gable');
+    ctx.fillStyle = '#050008aa'; ctx.fillRect(-64, 42, 128, 36);
+    ctx.fillStyle = t.c; ctx.fillRect(-50, 16, 100, 50);
+    ctx.fillStyle = '#fff2a7'; ctx.font = '12px Arial'; ctx.textAlign = 'center'; ctx.fillText('notice', 0, 36);
+    ctx.fillStyle = '#385c63'; ctx.beginPath(); ctx.arc(116, 80, safeRadius(28), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#9fe8ff'; ctx.beginPath(); ctx.arc(116, 80, safeRadius(15 + Math.sin(time * 2) * 2), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff2a777'; ctx.beginPath(); ctx.arc(-106, 82, safeRadius(36), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d8b45a'; ctx.fillRect(-118, 38, 24, 72);
+    for (let i = 0; i < 8; i++) {
+        let lx = -260 + i * 75, ly = i % 2 ? 100 : -6;
+        ctx.fillStyle = '#2b2010'; ctx.fillRect(lx - 3, ly - 28, 6, 44);
+        ctx.fillStyle = '#fff2a7aa'; ctx.beginPath(); ctx.arc(lx, ly - 31, safeRadius(10), 0, Math.PI * 2); ctx.fill();
+    }
+    if (t.arch === 'solar') { ctx.fillStyle = '#fff2a7'; ctx.beginPath(); ctx.arc(-9, -210, safeRadius(34), 0, Math.PI * 2); ctx.fill(); for (let i = 0; i < 10; i++) ctx.fillRect(-9 + Math.cos(i) * 52 - 8, -210 + Math.sin(i) * 52 - 4, 16, 8); }
+    if (t.arch === 'crypt' || t.arch === 'plague') for (let i = 0; i < 6; i++) { ctx.fillStyle = '#b7ffb7'; ctx.fillRect(-314 + i * 28, 98 - i % 2 * 10, 12, 46); ctx.fillRect(-318 + i * 28, 90 - i % 2 * 10, 20, 10); }
+    if (t.arch === 'cinder' || t.arch === 'infernal') for (let i = 0; i < 5; i++) { ctx.fillStyle = '#ff7043'; ctx.fillRect(-276 + i * 132, -180, 18, 86); ctx.fillStyle = '#ffcc7a'; ctx.fillRect(-272 + i * 132, -196 - Math.sin(time * 4 + i) * 8, 10, 22); }
+    if (t.arch === 'root' || t.arch === 'forest' || t.arch === 'faerie') for (let i = 0; i < 7; i++) { ctx.fillStyle = '#5a351f'; ctx.fillRect(-300 + i * 92, -176 + i % 2 * 260, 13, 58); ctx.fillStyle = t.arch === 'faerie' ? '#fffacd' : '#73bf45'; ctx.beginPath(); ctx.arc(-294 + i * 92, -196 + i % 2 * 260, safeRadius(26), 0, Math.PI * 2); ctx.fill(); }
+    if (t.arch === 'storm' || t.arch === 'sky') for (let i = 0; i < 5; i++) { ctx.fillStyle = '#fff36b'; ctx.fillRect(-154 + i * 78, -218, 8, 118); ctx.fillRect(-169 + i * 78, -218, 38, 8); }
+    if (t.arch === 'dragon') { ctx.fillStyle = '#ffc163'; ctx.beginPath(); ctx.moveTo(-186, -134); ctx.lineTo(-118, -215); ctx.lineTo(-48, -134); ctx.fill(); ctx.beginPath(); ctx.moveTo(58, -134); ctx.lineTo(124, -215); ctx.lineTo(194, -134); ctx.fill(); }
+    if (t.arch === 'tide') { ctx.strokeStyle = '#9fe8ff'; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(0, 34, safeRadius(245), .18, Math.PI - .18); ctx.stroke(); }
+    if (t.arch === 'rot') { ctx.fillStyle = '#050008'; ctx.fillRect(-34, -230, 68, 246); ctx.fillStyle = '#ff1744'; ctx.fillRect(-6, -260, 12, 300); }
+    drawTownCulture(t, time);
+    if (active) {
+        ctx.strokeStyle = '#fff2a7';
+        ctx.lineWidth = 5;
+        ctx.setLineDash([14, 10]);
+        ctx.beginPath(); ctx.ellipse(0, 16, 342, 244, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    ctx.fillStyle = '#050008cc'; ctx.fillRect(-138, 204, 276, 32);
+    ctx.fillStyle = '#fff2a7'; ctx.font = '18px Georgia'; ctx.textAlign = 'center'; ctx.fillText(t.name, 0, 226);
+    ctx.font = '13px Arial'; ctx.fillText(near ? 'Enter: ' + role : role, 0, 249);
+    ctx.restore();
+}
+
+function drawStory() {
+    let restored = story.stage, c = STORY_CHAPTERS[Math.min(story.stage, STORY_CHAPTERS.length - 1)];
+    if (story.inTown) return drawTown();
+    let time = performance.now() * .001, here = storyBiomeAt(story.x, story.y);
+    let sky = ctx.createLinearGradient(0, 0, 0, H());
+    sky.addColorStop(0, here[0].includes('Frost') || here[0].includes('Icy') ? '#b9e8ff' : '#26364a');
+    sky.addColorStop(.56, '#23452b');
+    sky.addColorStop(1, here[1]);
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W(), H());
+    let storyLight = ctx.createRadialGradient(W() * .42, H() * .22, 30, W() * .42, H() * .22, W() * .82);
+    storyLight.addColorStop(0, '#fff2a718');
+    storyLight.addColorStop(.48, '#00000000');
+    storyLight.addColorStop(1, '#0000004a');
+    ctx.fillStyle = storyLight;
+    ctx.fillRect(0, 0, W(), H());
+    ctx.save();
+    ctx.translate(-story.camX, -story.camY);
+
+    ctx.fillStyle = '#1f321d'; ctx.fillRect(0, 0, STORY_WORLD_W, STORY_WORLD_H);
+    for (let t of STORY_TOWNS) {
+        let b = STORY_BIOMES[Math.min(STORY_TOWNS.indexOf(t), STORY_BIOMES.length - 1)];
+        ctx.globalAlpha = .34;
+        ctx.fillStyle = b[1];
+        ctx.beginPath(); ctx.arc(t.x, t.y, safeRadius(t.arch === 'forest' ? 560 : 430), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#14331d';
+    ctx.beginPath();
+    ctx.moveTo(0, STORY_WORLD_H - 760);
+    for (let x = 0; x <= STORY_WORLD_W; x += 120) ctx.lineTo(x, STORY_WORLD_H - 720 + Math.sin(x * .006) * 70);
+    ctx.lineTo(STORY_WORLD_W, STORY_WORLD_H);
+    ctx.lineTo(0, STORY_WORLD_H);
+    ctx.fill();
+
+    let river = ctx.createLinearGradient(0, 0, STORY_WORLD_W, STORY_WORLD_H);
+    river.addColorStop(0, '#1b5366'); river.addColorStop(1, restored > 10 ? '#40e0d0' : '#204c5a');
+    ctx.strokeStyle = river; ctx.lineWidth = 42; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(410, 90); ctx.bezierCurveTo(860, 720, 470, 1260, 1260, 1780); ctx.bezierCurveTo(2030, 2270, 3250, 1980, 3820, STORY_WORLD_H); ctx.stroke();
+    ctx.strokeStyle = '#d8f7ff55'; ctx.lineWidth = 7; ctx.setLineDash([18, 38]); ctx.lineDashOffset = -time * 34; ctx.stroke(); ctx.setLineDash([]);
+
+    for (let i = 0; i < 14; i++) {
+        let mx = 180 + i * 360, my = 160 + (i % 4) * 150;
+        ctx.fillStyle = i % 2 ? '#3b4d34' : '#273b2c';
+        ctx.beginPath(); ctx.moveTo(mx - 170, my + 210); ctx.lineTo(mx, my - 70); ctx.lineTo(mx + 170, my + 210); ctx.fill();
+    }
+    for (let x = 50; x < STORY_WORLD_W; x += 230) for (let y = 140; y < STORY_WORLD_H; y += 235) {
+        let southern = y > STORY_WORLD_H - 850, noise = Math.sin(x * .017 + y * .013), heal = Math.min(12, restored);
+        if (!southern && noise < .08) continue;
+        if (Math.hypot(x - STORY_HUB.x, y - STORY_HUB.y) < 390) continue;
+        if (STORY_TOWNS.some(t => Math.hypot(x - t.x, y - t.y) < 430)) continue;
+        ctx.fillStyle = noise > .55 ? '#5a351f' : '#6d4327';
+        ctx.fillRect(x + 7, y + 8, 22, southern ? 82 : 58);
+        ctx.fillStyle = southern ? '#6fb45a' : restored > 4 ? '#5e9d55' : '#355f36';
+        ctx.beginPath();
+        ctx.arc(x + 18, y - 12, safeRadius((southern ? 42 : 30) + heal), 0, Math.PI * 2);
+        ctx.arc(x - 7, y + 12, safeRadius((southern ? 35 : 24) + heal), 0, Math.PI * 2);
+        ctx.arc(x + 45, y + 12, safeRadius((southern ? 36 : 25) + heal), 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    drawWorldRoad([{ x: 2600, y: 3060 }, STORY_HUB], 62, '#5b4027', restored > 0);
+    for (let t of STORY_TOWNS.slice(1)) drawWorldRoad([STORY_HUB, { x: (STORY_HUB.x + t.x) / 2, y: (STORY_HUB.y + t.y) / 2 + (t.x < STORY_HUB.x ? 70 : -70) }, t], 42, '#4b3320', restored >= STORY_TOWNS.indexOf(t));
+    drawWorldRoad([STORY_HUB, STORY_TOWNS[0]], 48, '#6a4a2e', true);
+    if (story.stage < STORY_BOSS_COUNT && story.quest < story.stage + 1) {
+        let q = storyQuestRoute(), route = q.step === 1 ? [q.home, STORY_HUB, q.partner] : q.step === 2 ? [q.partner, STORY_HUB, q.home] : [STORY_HUB, q.home];
+        drawWorldRoad(route, 16, '#fff2a7', true);
+    }
+
+    drawHubShrine(time, restored);
+    for (let t of STORY_TOWNS) drawWorldTown(t, time, restored);
+
+    let gate = storyGate(), ready = story.quest >= story.stage + 1;
+    ctx.globalAlpha = .32;
+    ctx.fillStyle = ready ? '#7ad08c' : '#ff1744';
+    ctx.beginPath(); ctx.arc(gate.x, gate.y, safeRadius(122 + Math.sin(time * 4) * 12), 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = ready ? '#7ad08c' : '#8b1d24'; ctx.fillRect(gate.x - 84, gate.y - 70, 168, 98);
+    ctx.fillStyle = ready ? '#fff2a7' : '#ff9f9f'; ctx.fillRect(gate.x - 54, gate.y - 42, 108, 58);
+    ctx.fillStyle = '#fff2a7'; ctx.font = '18px Georgia'; ctx.fillText(story.stage >= STORY_BOSS_COUNT ? 'Final Rot' : 'Shrine Trial', gate.x - 66, gate.y - 88);
+    ctx.fillStyle = '#e7d9b7'; ctx.font = '14px Georgia'; ctx.fillText(ready ? 'Enter: fight' : 'Help town first', gate.x - 55, gate.y + 56);
+
+    let ch = storyHeroChar();
+    drawModel(ctx, { ch, x: story.x, y: story.y, on: 1, vx: 0, blk: 0, atk: 0 }, story.x - 22, story.y - 60, .54, 0);
+    ctx.restore();
+    drawObjectiveCompass();
+    drawFinalQuizPanel();
+    ctx.fillStyle = '#e7d9b7'; ctx.font = '14px Georgia'; ctx.fillText(c[0] + '  |  Shift: sprint', W() / 2 - 110, 72);
+    ctx.fillStyle = '#0008'; ctx.fillRect(W() / 2 - 300, 88, 600, 48);
+    ctx.fillStyle = '#fff2a7'; ctx.font = '15px Georgia'; ctx.textAlign = 'center';
+    ctx.fillText(storyQuestHint(), W() / 2, 118);
+    ctx.textAlign = 'left';
+}
+
+function drawTown() {
+    let t = story.town || STORY_TOWNS[0], ch = storyHeroChar();
+    let time = performance.now() * .001;
+    let near = nearbyTownObject();
+    let l = townLayout(), cx = l.cx, cy = l.cy;
+    let ground = ctx.createLinearGradient(0, 0, 0, H());
+    ground.addColorStop(0, '#34502f');
+    ground.addColorStop(1, '#172715');
+    ctx.fillStyle = ground; ctx.fillRect(0, 0, W(), H());
+    ctx.fillStyle = '#1e351c';
+    for (let i = 0; i < 32; i++) {
+        let x = (i * 137) % W(), y = 70 + (i * 89) % Math.max(180, H() - 140);
+        ctx.globalAlpha = .2;
+        ctx.beginPath();
+        ctx.arc(x, y, safeRadius(8 + i % 4 * 3), 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for (let x = 20; x < W(); x += 110) for (let y = 70; y < H(); y += 120) {
+        ctx.fillStyle = (x + y) % 220 ? '#6d4327' : '#5a351f';
+        ctx.fillRect(x + 8, y + 28, 18, 58);
+        ctx.fillStyle = '#5e9d55';
+        ctx.beginPath();
+        ctx.arc(x + 17, y + 10, safeRadius(29), 0, Math.PI * 2);
+        ctx.arc(x - 2, y + 28, safeRadius(23), 0, Math.PI * 2);
+        ctx.arc(x + 38, y + 29, safeRadius(24), 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = .24;
+    ctx.fillStyle = t.c;
+    ctx.fillRect(0, 64, W(), 8);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#b69a60';
+    ctx.lineWidth = 44;
+    ctx.beginPath();
+    ctx.moveTo(cx, H());
+    ctx.lineTo(cx, cy + 72);
+    ctx.lineTo(cx - l.shop, cy - 5);
+    ctx.moveTo(cx, cy + 72);
+    ctx.lineTo(cx + l.shop, cy - 5);
+    ctx.moveTo(cx, cy + 72);
+    ctx.lineTo(cx, cy - 190);
+    ctx.stroke();
+    ctx.strokeStyle = '#fff2a755'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#91794b';
+    ctx.beginPath();
+    ctx.arc(cx, cy + 70, safeRadius(58), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff2a755';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    function building(x, y, w, h, roof, label) {
+        ctx.fillStyle = '#0007'; ctx.fillRect(x - 8, y + h - 4, w + 16, 14);
+        shadeRect(ctx, x, y, w, h, '#7a5735', '#c28b58', '#2b170c');
+        ctx.fillStyle = roof; ctx.beginPath(); ctx.moveTo(x - 14, y + 5); ctx.lineTo(x + w / 2, y - 34); ctx.lineTo(x + w + 14, y + 5); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = .32; ctx.fillStyle = '#fff2a7'; ctx.beginPath(); ctx.moveTo(x - 9, y + 5); ctx.lineTo(x + w / 2, y - 27); ctx.lineTo(x + w / 2 - 10, y + 7); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+        ctx.fillStyle = '#1d1308'; ctx.fillRect(x + w / 2 - 10, y + h - 30, 20, 30);
+        ctx.fillStyle = '#fff2a799'; ctx.fillRect(x + 12, y + 18, 16, 14); ctx.fillRect(x + w - 28, y + 18, 16, 14);
+        ctx.fillStyle = '#fff2a7'; ctx.font = '13px Arial'; ctx.textAlign = 'center'; ctx.fillText(label, x + w / 2, y + h + 27); ctx.textAlign = 'left';
+    }
+    building(cx - l.shop - 85, cy - 160, 170, 105, t.c, 'Shop');
+    building(cx + l.shop - 85, cy - 160, 170, 105, t.c, 'Inn');
+    building(cx - 95, cy - 282, 190, 92, '#d8b45a', 'Town Hall');
+    building(cx - l.home - 60, cy + 70, 120, 82, '#6d4b2c', 'Home');
+    building(cx + l.home - 60, cy + 70, 120, 82, '#6d4b2c', 'Home');
+    building(cx - l.far - 52, cy - 18, 105, 74, '#5b7b52', 'Smith');
+    building(cx + l.far - 52, cy - 18, 105, 74, '#5b7b52', 'Store');
+
+    for (let i = 0; i < 8; i++) {
+        let x = cx - 335 + i * 96, y = cy + 152 + (i % 2) * 8;
+        ctx.fillStyle = '#5a351f';
+        ctx.fillRect(x, y, 8, 34);
+        ctx.fillStyle = '#7a5735';
+        ctx.fillRect(x - 10, y + 8, 28, 7);
+    }
+    for (let i = 0; i < 6; i++) {
+        let x = cx - 275 + i * 110, y = i % 2 ? cy - 12 : cy + 116;
+        ctx.fillStyle = '#2b2010';
+        ctx.fillRect(x - 4, y - 28, 8, 45);
+        ctx.fillStyle = '#fff2a7aa';
+        ctx.beginPath();
+        ctx.arc(x, y - 32, safeRadius(13 + Math.sin(time * 3 + i) * 2), 0, Math.PI * 2);
+        ctx.fill();
+    }
+    for (let i = 0; i < 18; i++) {
+        ctx.fillStyle = i % 3 ? '#fff2a7' : t.c;
+        ctx.beginPath();
+        ctx.arc(cx - 420 + (i * 47) % 840, cy + 188 + Math.sin(i) * 15, safeRadius(4), 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.fillStyle = '#050008aa'; ctx.fillRect(cx - 232, cy + 42, 164, 28);
+    ctx.fillStyle = t.c; ctx.fillRect(cx - 218, cy + 18, 136, 44);
+    ctx.fillStyle = '#fff2a7'; ctx.font = '13px Arial'; ctx.textAlign = 'center'; ctx.fillText('Notice Board', cx - 150, cy + 122);
+
+    ctx.fillStyle = '#385c63'; ctx.beginPath(); ctx.arc(cx + 150, cy + 58, safeRadius(32), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#9fe8ff'; ctx.beginPath(); ctx.arc(cx + 150, cy + 58, safeRadius(18 + Math.sin(time*2)*2), 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#fff2a733'; ctx.beginPath(); ctx.arc(cx, cy - 125, safeRadius(62 + Math.sin(time*3)*5), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d8b45a'; ctx.fillRect(cx - 28, cy - 172, 56, 94);
+    ctx.fillStyle = t.c; ctx.fillRect(cx - 45, cy - 200, 90, 24);
+
+    ctx.fillStyle = '#050008bb';
+    ctx.fillRect(cx - 128, 18, 256, 34);
+    ctx.fillStyle = '#fff2a7'; ctx.font = '24px Georgia'; ctx.textAlign = 'center'; ctx.fillText(t.name, cx, 44);
+    ctx.font = '16px Georgia'; ctx.fillText('South road exits town', cx, H() - 28);
+    ctx.textAlign = 'left';
+    for (let o of townObjects()) {
+        let active = near && near.id === o.id;
+        ctx.globalAlpha = active ? .42 : .16;
+        ctx.fillStyle = active ? '#fff2a7' : t.c;
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, safeRadius(active ? 38 : 24), 0, Math.PI * 2);
+        ctx.fill();
+        if (active) {
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = '#050008dd';
+            ctx.fillRect(o.x - 72, o.y - 58, 144, 24);
+            ctx.fillStyle = '#fff2a7';
+            ctx.font = '13px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Enter: ' + o.label, o.x, o.y - 42);
+            ctx.textAlign = 'left';
+        }
+    }
+    ctx.globalAlpha = 1;
+    let npc = { ch: { name: t.npc, color: t.c, accent: '#fff2a7', kind: 'staff' }, x: cx - 30, y: cy - 52, on: 1, vx: 0, blk: 0, atk: 0 };
+    ctx.globalAlpha = .28;
+    ctx.fillStyle = '#fff2a7';
+    ctx.beginPath();
+    ctx.arc(cx, cy + 12, safeRadius(60 + Math.sin(time * 3) * 6), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    drawModel(ctx, npc, cx - 40, cy - 52, .72, 0);
+    drawModel(ctx, { ch, x: story.x, y: story.y, on: 1, vx: 0, blk: 0, atk: 0 }, story.x - 22, story.y - 60, .54, 0);
+    if (story.talk) {
+        ctx.fillStyle = '#050008dd'; ctx.fillRect(80, H() - 180, W() - 160, 105);
+        ctx.strokeStyle = '#d8b45a'; ctx.strokeRect(80, H() - 180, W() - 160, 105);
+        ctx.fillStyle = '#fff2a7'; ctx.font = '17px Georgia'; ctx.fillText(t.npc + ': ' + t.line, 105, H() - 138);
+    }
+}
 function drawUltimate() {
     if (!G.ult) return;
     let u = G.ult, f = fighterByRef(u.caster), t = fighterByRef(u.target);
@@ -1372,13 +2751,13 @@ function drawUltimate() {
     ctx.restore();
 }
 // Main draw function - renders background, effects, projectiles, fighters, particles
-function draw(){ensureFighters();ctx.save();let sh=G.shake||0;if(sh)ctx.translate(rr(-sh,sh),rr(-sh,sh));drawBg();for(let f of G.fx){let a=cl(f.life/.32,0,1),rad=safeRadius(24*(1-a)+8);ctx.globalAlpha=a;ctx.shadowBlur=0;ctx.fillStyle=f.c;if(f.slash){ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.dir*.35);ctx.fillRect(0,-5,f.dir*86,10);ctx.fillStyle='#fff8';ctx.fillRect(8,-2,f.dir*58,4);ctx.restore()}else{ctx.beginPath();ctx.arc(f.x+f.dir*25,f.y,rad,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6';ctx.fillRect(f.x,f.y-3,f.dir*65,6)}}ctx.globalAlpha=1;for(let s of G.shots){ctx.shadowBlur=0;ctx.fillStyle=s.c;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff8';ctx.beginPath();ctx.arc(s.x,s.y,s.r*.35,0,Math.PI*2);ctx.fill()}drawModel(ctx,p1,p1.x,p1.y,.98,p1.dir<0);drawModel(ctx,p2,p2.x,p2.y,.98,p2.dir<0);drawUltimate();for(let p of G.parts){ctx.globalAlpha=cl(p.life/.55,0,1);ctx.shadowBlur=0;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r||4,0,Math.PI*2);ctx.fill()}ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.restore()}
+function draw(){if(story.active&&!story.boss){ctx.save();drawStory();ctx.restore();return}ensureFighters();ctx.save();let sh=G.shake||0;if(sh)ctx.translate(rr(-sh,sh),rr(-sh,sh));drawBg();if(G.bossWarn){ctx.globalAlpha=.45;ctx.fillStyle='red';ctx.fillRect(G.bossWarn.x,G.bossWarn.y,G.bossWarn.w,G.bossWarn.h);ctx.globalAlpha=1}for(let f of G.fx){let a=cl(f.life/.32,0,1),rad=safeRadius(24*(1-a)+8);ctx.globalAlpha=a;ctx.shadowBlur=0;ctx.fillStyle=f.c;if(f.slash){ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.dir*.35);ctx.fillRect(0,-5,f.dir*86,10);ctx.fillStyle='#fff8';ctx.fillRect(8,-2,f.dir*58,4);ctx.restore()}else{ctx.beginPath();ctx.arc(f.x+f.dir*25,f.y,rad,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6';ctx.fillRect(f.x,f.y-3,f.dir*65,6)}}ctx.globalAlpha=1;for(let s of G.shots){ctx.shadowBlur=0;ctx.fillStyle=s.c;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff8';ctx.beginPath();ctx.arc(s.x,s.y,s.r*.35,0,Math.PI*2);ctx.fill()}drawModel(ctx,p1,p1.x,p1.y,.98,p1.dir<0);drawModel(ctx,p2,p2.x,p2.y,.98,p2.dir<0);if(p2&&p2.invuln>0){ctx.globalAlpha=.3;ctx.fillStyle='#ff1744';ctx.fillRect(p2.x-8,p2.y-8,p2.w+16,p2.h+16);ctx.globalAlpha=1}drawUltimate();for(let p of G.parts){ctx.globalAlpha=cl(p.life/.55,0,1);ctx.shadowBlur=0;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r||4,0,Math.PI*2);ctx.fill()}ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.restore()}
 // Main game loop - calculates delta time, updates game state, renders, syncs network state
 function loop(now){if(!G.run&&!G.over)return;let dt=Math.min(.033,(now-last)/1000||1/60);last=now;update(dt);draw();sendState();raf=requestAnimationFrame(loop)}
 // Set difficulty level
 function setDiff(v){if(!D[v])return;diff=v;document.querySelectorAll('.diff').forEach(b=>b.classList.toggle('sel',b.dataset.d===v))}
 // Bind click handlers to UI elements
-function bind(){els.playBtn.onclick=startGame;els.shopBtn.onclick=openShop;els.shopBackBtn.onclick=showMenu;els.controlsBtn.onclick=()=>els.how.classList.toggle('show');els.hostBtn.onclick=hostGame;els.joinBtn.onclick=joinGame;els.cancelHostBtn.onclick=showMenu;els.msg.onclick=showMenu;document.querySelectorAll('.diff').forEach(b=>b.onclick=()=>setDiff(b.dataset.d))}
+function bind(){els.playBtn.onclick=startGame;els.storyBtn.onclick=openStoryCreate;els.storyStartBtn.onclick=beginStory;els.storyBackBtn.onclick=showMenu;els.storyMenuBtn.onclick=showMenu;['storyAtk','storyDef','storySpd'].forEach(id=>els[id].oninput=updateStoryPoints);els.shopBtn.onclick=openShop;els.shopBackBtn.onclick=showMenu;els.controlsBtn.onclick=()=>els.how.classList.toggle('show');els.hostBtn.onclick=hostGame;els.joinBtn.onclick=joinGame;els.cancelHostBtn.onclick=showMenu;els.msg.onclick=()=>{if(G.storyBoss||story.active)return;showMenu()};document.querySelectorAll('.diff').forEach(b=>b.onclick=()=>setDiff(b.dataset.d))}
 
 // ============================================================================
 // AUDIO SYSTEM - Web Audio API synthesizer
@@ -1399,13 +2778,13 @@ function playMusic(mode='menu'){clearInterval(musicInterval);musicMode=mode;els.
 // Play victory/defeat jingle
 function playEndMusic(win){clearInterval(musicInterval);musicMode='end';dangerMode=false;els.dangerFlash.style.borderColor='transparent';const seq=win?[523,659,784,1046,784,659]:[392,349,311,262,220,196];let i=0;musicInterval=setInterval(()=>{els.dangerFlash.style.borderColor='transparent';let n=seq[i%seq.length];voice(n,.35,{type:'sine',vol:.09,pan:i%2?.2:-.2,cutoff:7000});voice(n*1.25,.35,{type:'sine',vol:.04,pan:i%2?-.2:.2,cutoff:6000});i++},260)}
 // Runtime assertions for debugging
-function tests(){console.assert(!/\}\s*const chord=/.test(playMusic.toString()),'no orphan music block after playMusic');console.assert(playMusic.toString().includes("musicMode==='battle'&&G.run&&!G.over"),'low health effect only runs during active battle');console.assert(voice.toString().includes('attack'),'soft synth voice envelope exists');console.assert(Array.isArray(comboBuf),'combo buffer exists');console.assert(els.statusText&&typeof els.statusText.textContent==='string','statusText element exists and is not window.status');console.assert(typeof startGame==='function'&&typeof hostGame==='function'&&typeof joinGame==='function','buttons wired');console.assert(chars.length===20,'characters loaded');console.assert(chars.every(c=>c.realm),'every character has a realm');console.assert(skinList(chars[0]).length===4,'each character has four unlockable skins');console.assert(typeof openShop==='function'&&typeof openCrate==='function','crate shop exists');console.assert(SUPER_GAIN<2&&SUPER_START===0,'supers charge slower from empty');console.assert(/^[0-9]{6}$/.test(makeCode()),'epoch seed code is 6 digits');console.assert(typeof grab==='function','Shift grab exists');console.assert(typeof sigMove==='function','C signature move exists');console.assert(typeof superMove==='function','supers exist');console.assert(fighter(0,chars[0]).maxHp>chars[0].hp*2,'Health boost makes matches last longer');console.assert(safeRadius(-5)>0,'arc radius is always positive');console.assert(typeof ensureFighters==='function','fighters are forced visible/valid every frame');console.assert(typeof drawModel==='function','detailed player models are rendered in fights');console.assert(!drawModel.toString().includes('fillRect(-9,-12,76,142)'),'character black box outline removed')}
+function tests(){console.assert(!/\}\s*const chord=/.test(playMusic.toString()),'no orphan music block after playMusic');console.assert(playMusic.toString().includes("musicMode==='battle'&&G.run&&!G.over"),'low health effect only runs during active battle');console.assert(voice.toString().includes('attack'),'soft synth voice envelope exists');console.assert(Array.isArray(comboBuf),'combo buffer exists');console.assert(els.statusText&&typeof els.statusText.textContent==='string','statusText element exists and is not window.status');console.assert(typeof startGame==='function'&&typeof hostGame==='function'&&typeof joinGame==='function','buttons wired');console.assert(chars.length>=20,'characters loaded');console.assert(chars.every(c=>c.realm),'every character has a realm');console.assert(skinList(chars[0]).length===4,'each character has four unlockable skins');console.assert(typeof openShop==='function'&&typeof openCrate==='function','crate shop exists');console.assert(typeof beginStory==='function'&&typeof updateStory==='function','story mode exists');console.assert(typeof counterMove==='function','B counter exists');console.assert(typeof spendSta==='function'&&fighter(0,chars[0]).maxSta===100,'stamina resource exists');console.assert(SUPER_GAIN<2&&SUPER_START===0,'supers charge slower from empty');console.assert(/^[0-9]{6}$/.test(makeCode()),'epoch seed code is 6 digits');console.assert(typeof grab==='function','Shift grab exists');console.assert(typeof sigMove==='function','C signature move exists');console.assert(typeof superMove==='function','supers exist');console.assert(fighter(0,chars[0]).maxHp>chars[0].hp*2,'Health boost makes matches last longer');console.assert(safeRadius(-5)>0,'arc radius is always positive');console.assert(typeof ensureFighters==='function','fighters are forced visible/valid every frame');console.assert(typeof drawModel==='function','detailed player models are rendered in fights');console.assert(!drawModel.toString().includes('fillRect(-9,-12,76,142)'),'character black box outline removed')}
 // ============================================================================
 // EVENT LISTENERS & INITIALIZATION
 // ============================================================================
 
 // Handle window resize
-addEventListener('resize',()=>{resize();drawBg()});addEventListener('storage',e=>{if(!net.code||e.key!=='ww-'+net.code||!e.newValue)return;try{let m=JSON.parse(e.newValue);if(m.from!==net.role)onNet(m)}catch(err){}});addEventListener('keydown',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw),first=!keys[k];setHeld(raw,true);if(first)q.push(k);sendInput(k,true,first);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Shift'].includes(e.key)||['w','a','d'].includes(raw))e.preventDefault()});addEventListener('keyup',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw);setHeld(raw,false);sendInput(k,false,false)});
+addEventListener('resize',()=>{resize();drawBg()});addEventListener('storage',e=>{if(!net.code||e.key!=='ww-'+net.code||!e.newValue)return;try{let m=JSON.parse(e.newValue);if(m.from!==net.role)onNet(m)}catch(err){}});addEventListener('keydown',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw),first=!keys[k];setHeld(raw,true);if(first)q.push(k);sendInput(k,true,first);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Shift','Enter'].includes(e.key)||['w','a','d','s','b'].includes(raw))e.preventDefault()});addEventListener('keyup',e=>{let raw=e.key.toLowerCase(),k=moveKey(raw);setHeld(raw,false);sendInput(k,false,false)});
 // Initialize game
 playMusic('menu');Object.assign(window,{startGame,hostGame,joinGame,showMenu,setDiff});resize();makeCards();bind();tests();drawBg();
 </script>
